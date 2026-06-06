@@ -188,38 +188,38 @@
   }
 
   /* ----- COLUMNA DERECHA ----- */
-  .right{display:grid;grid-template-rows:1.25fr 1fr;gap:clamp(12px,1.4vw,24px);min-height:0;}
+  .right{display:grid;grid-template-rows:1.5fr 1fr;gap:clamp(10px,1.2vw,20px);min-height:0;}
 
   .trivia{
-    padding:1em 1.1em;
+    padding:0.7em 1em;
     display:flex;flex-direction:column;
-    font-size:clamp(13px,1.4vw,26px); /* unidad base — JS la reduce si hace falta */
+    font-size:clamp(12px,1.3vw,24px);
     overflow:hidden;min-height:0;
   }
   .trivia-q{
-    margin-top:0.8em;
+    margin-top:0.55em;
     font-family:'Saira Condensed';font-weight:700;
-    font-size:1.2em;line-height:1.1;
+    font-size:1.15em;line-height:1.1;
     text-transform:uppercase;letter-spacing:.5px;
   }
-  .opts{display:grid;gap:0.32em;margin-top:0.45em;}
+  .opts{display:grid;gap:0.28em;margin-top:0.35em;}
   .opt{
     display:flex;align-items:center;gap:.7em;
     background:rgba(255,255,255,.05);
     border:1px solid rgba(255,255,255,.1);
-    border-radius:12px;padding:.4em .9em;
+    border-radius:10px;padding:.35em .9em;
     font-family:'Saira Condensed';font-weight:600;
     font-size:1em;text-transform:uppercase;
     transition:all .3s ease;
   }
   .opt .k{
-    width:1.7em;height:1.7em;flex:0 0 auto;border-radius:7px;
+    width:1.6em;height:1.6em;flex:0 0 auto;border-radius:6px;
     background:var(--neon-soft);color:var(--neon);
     display:grid;place-items:center;font-family:'Oxanium';font-weight:800;
   }
   .opt.correct{background:linear-gradient(90deg,var(--neon),#9bd400);border-color:var(--neon);color:var(--noche);}
   .opt.correct .k{background:rgba(0,0,0,.2);color:var(--noche);}
-  .trivia-bar{height:6px;border-radius:6px;background:rgba(255,255,255,.1);margin-top:0.6em;overflow:hidden;}
+  .trivia-bar{height:5px;border-radius:5px;background:rgba(255,255,255,.1);margin-top:0.5em;overflow:hidden;}
   .trivia-bar i{display:block;height:100%;background:var(--magenta);width:100%;}
 
   /* ----- QR / PRODE ----- */
@@ -722,17 +722,22 @@ function ajustarTrivia() {
   const panel = document.querySelector('.trivia');
   if (!panel) return;
   panel.style.fontSize = '';
-  // Reading scrollHeight forces a synchronous layout reflow
-  if (panel.scrollHeight <= panel.clientHeight) return;
-  // Binary search: find the largest font size where content fits
-  let lo = 8, hi = parseFloat(getComputedStyle(panel).fontSize);
-  for (let i = 0; i < 14; i++) {
-    const mid = (lo + hi) / 2;
-    panel.style.fontSize = mid + 'px';
-    if (panel.scrollHeight > panel.clientHeight) hi = mid;
-    else lo = mid;
-  }
-  panel.style.fontSize = Math.floor(lo) + 'px';
+  setTimeout(() => {
+    const lastOpt = panel.querySelector('.opt:last-child');
+    if (!lastOpt) return;
+    // Use getBoundingClientRect: checks real visible position, not scrollHeight
+    const panelBottom = panel.getBoundingClientRect().bottom;
+    if (lastOpt.getBoundingClientRect().bottom <= panelBottom - 2) return;
+    // Binary search: shrink font until last option fits inside panel
+    let lo = 8, hi = parseFloat(getComputedStyle(panel).fontSize);
+    for (let i = 0; i < 16; i++) {
+      const mid = (lo + hi) / 2;
+      panel.style.fontSize = mid + 'px';
+      if (lastOpt.getBoundingClientRect().bottom > panel.getBoundingClientRect().bottom - 2) hi = mid;
+      else lo = mid;
+    }
+    panel.style.fontSize = Math.floor(lo) + 'px';
+  }, 200);
 }
 
 let tIdx = 0;
