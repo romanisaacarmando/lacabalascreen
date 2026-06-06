@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Cábala Screen · Mundial 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Saira+Condensed:wght@400;600;700;900&family=Oxanium:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  /* ============================================================
+     CONFIG VISUAL — colores de la marca de la pantalla
+     ============================================================ */
+  :root{
+    --noche:#06120c;
+    --noche-2:#0b2117;
+    --cesped:#0e3322;
+    --neon:#ccff00;
+    --neon-soft:rgba(204,255,0,.18);
+    --celeste:#43c5ff;
+    --magenta:#ff2e7e;
+    --naranja:#ff8a1e;
+    --hueso:#f3f7ee;
+    --gris:#7f9488;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:100%;height:100%;overflow:hidden;background:var(--noche);}
+
+  body{
+    font-family:'Saira Condensed',sans-serif;
+    color:var(--hueso);
+    position:relative;
+    background:
+      radial-gradient(120% 80% at 50% -10%, var(--cesped) 0%, var(--noche-2) 45%, var(--noche) 100%);
+  }
+
+  /* textura de césped / líneas de cancha sutiles */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(255,255,255,.015) 0 2px, transparent 2px 80px),
+      repeating-linear-gradient(0deg, rgba(255,255,255,.01) 0 2px, transparent 2px 80px);
+    mask-image:radial-gradient(120% 100% at 50% 30%, #000 40%, transparent 100%);
+  }
+  /* grano */
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .screen{
+    position:relative;z-index:2;
+    height:100vh;width:100vw;
+    display:grid;
+    grid-template-rows:auto 1fr auto auto;
+    padding:clamp(12px,1.6vw,28px);
+    gap:clamp(10px,1.2vh,20px);
+  }
+
+  /* ===================== HEADER ===================== */
+  .top{
+    display:flex;align-items:center;justify-content:space-between;
+    border-bottom:2px solid var(--neon-soft);
+    padding-bottom:clamp(8px,1vh,16px);
+  }
+  .bar-brand{display:flex;align-items:center;gap:clamp(10px,1vw,18px);}
+  .bar-mark{
+    width:clamp(46px,4.2vw,80px);height:clamp(46px,4.2vw,80px);
+    background:linear-gradient(135deg,var(--neon),#9bd400);
+    color:var(--noche);border-radius:14px;
+    display:grid;place-items:center;
+    font-family:'Anton';font-size:clamp(22px,2.4vw,46px);
+    box-shadow:0 0 28px var(--neon-soft);
+    transform:rotate(-3deg);
+  }
+  .bar-name{
+    font-family:'Anton';
+    font-size:clamp(26px,3vw,58px);line-height:.92;
+    letter-spacing:.5px;text-transform:uppercase;
+  }
+  .bar-name small{
+    display:block;font-family:'Oxanium';font-weight:600;
+    font-size:clamp(10px,.85vw,16px);letter-spacing:.32em;
+    color:var(--neon);text-transform:uppercase;margin-top:.25em;
+  }
+  .cup-tag{text-align:right;line-height:1;}
+  .cup-tag .m{
+    font-family:'Anton';font-size:clamp(22px,2.6vw,52px);
+    color:var(--hueso);text-transform:uppercase;letter-spacing:1px;
+  }
+  .cup-tag .y{
+    font-family:'Oxanium';font-weight:800;font-size:clamp(28px,3.4vw,66px);
+    background:linear-gradient(180deg,var(--neon),var(--naranja));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+
+  /* ===================== CUERPO ===================== */
+  .body{
+    display:grid;
+    grid-template-columns:1.55fr 1fr;
+    gap:clamp(12px,1.4vw,24px);
+    min-height:0;
+  }
+  .panel{
+    background:linear-gradient(160deg, rgba(255,255,255,.05), rgba(255,255,255,.01));
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:20px;
+    backdrop-filter:blur(4px);
+    position:relative;overflow:hidden;
+  }
+  .panel-label{
+    position:absolute;top:0;left:0;
+    background:var(--neon);color:var(--noche);
+    font-family:'Oxanium';font-weight:800;
+    font-size:clamp(10px,.8vw,15px);letter-spacing:.22em;
+    padding:.4em .9em;border-radius:0 0 14px 0;text-transform:uppercase;z-index:3;
+  }
+  .live-dot{
+    display:inline-block;width:.55em;height:.55em;border-radius:50%;
+    background:var(--magenta);margin-right:.45em;vertical-align:middle;
+    box-shadow:0 0 0 0 var(--magenta);animation:pulse 1.4s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(255,46,126,.6);}
+    70%{box-shadow:0 0 0 .8em rgba(255,46,126,0);}
+    100%{box-shadow:0 0 0 0 rgba(255,46,126,0);}
+  }
+
+  /* ----- MARCADOR ----- */
+  .scoreboard{
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+    padding:clamp(20px,3vh,48px) clamp(16px,2vw,40px);
+    text-align:center;
+  }
+  .match-meta{
+    font-family:'Oxanium';font-weight:600;letter-spacing:.3em;
+    color:var(--gris);text-transform:uppercase;
+    font-size:clamp(11px,1vw,18px);margin-bottom:clamp(10px,2vh,28px);
+  }
+  .score-row{
+    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+    width:100%;gap:clamp(8px,1.5vw,28px);
+  }
+  .team{display:flex;flex-direction:column;align-items:center;gap:.3em;}
+  .flag{font-size:clamp(46px,6vw,118px);line-height:1;filter:drop-shadow(0 6px 14px rgba(0,0,0,.5));}
+  .team-name{
+    font-family:'Anton';text-transform:uppercase;letter-spacing:1px;
+    font-size:clamp(22px,2.6vw,52px);
+  }
+  .scores{display:flex;align-items:center;gap:clamp(6px,.8vw,16px);}
+  .num{
+    font-family:'Oxanium';font-weight:800;
+    font-size:clamp(64px,10vw,190px);line-height:.8;
+    color:var(--hueso);
+    text-shadow:0 0 30px rgba(204,255,0,.25);
+    transition:transform .25s ease;
+  }
+  .num.bump{animation:bump .5s ease;}
+  @keyframes bump{0%{transform:scale(1);}40%{transform:scale(1.35);color:var(--neon);}100%{transform:scale(1);}}
+  .dash{font-family:'Anton';font-size:clamp(40px,6vw,120px);color:var(--gris);}
+  .clock{
+    margin-top:clamp(12px,2.5vh,34px);
+    font-family:'Oxanium';font-weight:800;
+    font-size:clamp(24px,2.8vw,54px);
+    color:var(--neon);letter-spacing:.06em;
+    display:inline-flex;align-items:center;gap:.4em;
+  }
+  .ball{display:inline-block;animation:spin 2.4s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* gol overlay */
+  .gol{
+    position:absolute;inset:0;display:grid;place-items:center;z-index:8;
+    background:radial-gradient(circle at 50% 50%, rgba(204,255,0,.92), rgba(204,255,0,0) 70%);
+    font-family:'Anton';font-size:clamp(60px,11vw,200px);color:var(--noche);
+    letter-spacing:.04em;opacity:0;pointer-events:none;
+  }
+  .gol.show{animation:golFlash 2.6s ease forwards;}
+  @keyframes golFlash{
+    0%{opacity:0;transform:scale(.4);}
+    12%{opacity:1;transform:scale(1);}
+    78%{opacity:1;transform:scale(1.02);}
+    100%{opacity:0;transform:scale(1.1);}
+  }
+
+  /* ----- COLUMNA DERECHA ----- */
+  .right{display:grid;grid-template-rows:1.25fr 1fr;gap:clamp(12px,1.4vw,24px);min-height:0;}
+
+  .trivia{padding:clamp(16px,2.2vh,30px) clamp(16px,1.6vw,28px);display:flex;flex-direction:column;}
+  .trivia-q{
+    margin-top:clamp(18px,3vh,34px);
+    font-family:'Saira Condensed';font-weight:700;
+    font-size:clamp(18px,1.7vw,34px);line-height:1.05;
+    text-transform:uppercase;letter-spacing:.5px;
+  }
+  .opts{display:grid;gap:clamp(7px,1vh,12px);margin-top:auto;}
+  .opt{
+    display:flex;align-items:center;gap:.7em;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:12px;padding:clamp(7px,1.1vh,13px) clamp(10px,1vw,18px);
+    font-family:'Saira Condensed';font-weight:600;
+    font-size:clamp(15px,1.3vw,26px);text-transform:uppercase;
+    transition:all .3s ease;
+  }
+  .opt .k{
+    width:1.7em;height:1.7em;flex:0 0 auto;border-radius:7px;
+    background:var(--neon-soft);color:var(--neon);
+    display:grid;place-items:center;font-family:'Oxanium';font-weight:800;
+  }
+  .opt.correct{background:linear-gradient(90deg,var(--neon),#9bd400);border-color:var(--neon);color:var(--noche);}
+  .opt.correct .k{background:rgba(0,0,0,.2);color:var(--noche);}
+  .trivia-bar{height:6px;border-radius:6px;background:rgba(255,255,255,.1);margin-top:clamp(12px,1.6vh,18px);overflow:hidden;}
+  .trivia-bar i{display:block;height:100%;background:var(--magenta);width:100%;}
+
+  /* ----- QR / PRODE ----- */
+  .prode{
+    display:flex;align-items:center;gap:clamp(14px,1.4vw,26px);
+    padding:clamp(14px,2vh,26px) clamp(16px,1.6vw,28px);
+  }
+  .qr-wrap{
+    background:var(--hueso);padding:clamp(8px,.8vw,14px);border-radius:14px;
+    box-shadow:0 0 26px rgba(204,255,0,.25);flex:0 0 auto;
+    display:grid;place-items:center;
+  }
+  .qr-wrap canvas,.qr-wrap img{display:block;width:clamp(86px,8vw,150px)!important;height:clamp(86px,8vw,150px)!important;}
+  .prode-txt h3{
+    font-family:'Anton';text-transform:uppercase;line-height:.95;
+    font-size:clamp(20px,2vw,40px);
+  }
+  .prode-txt h3 b{color:var(--neon);}
+  .prode-txt p{
+    font-family:'Saira Condensed';font-weight:600;color:var(--gris);
+    font-size:clamp(13px,1.1vw,22px);margin-top:.3em;text-transform:uppercase;letter-spacing:.5px;
+  }
+  .prode-prize{
+    display:inline-block;margin-top:.6em;
+    background:var(--magenta);color:#fff;font-family:'Oxanium';font-weight:800;
+    font-size:clamp(12px,1vw,20px);padding:.35em .8em;border-radius:8px;text-transform:uppercase;
+  }
+
+  /* ===================== PROMO ===================== */
+  .promo{
+    border-radius:18px;overflow:hidden;position:relative;
+    background:linear-gradient(100deg,var(--magenta),var(--naranja));
+    color:#fff;min-height:clamp(64px,9vh,120px);
+    display:flex;align-items:center;
+  }
+  .promo-track{position:relative;width:100%;height:100%;}
+  .promo-slide{
+    position:absolute;inset:0;display:flex;align-items:center;
+    padding:0 clamp(20px,2.5vw,48px);gap:clamp(14px,1.6vw,30px);
+    opacity:0;transform:translateY(20px);transition:all .6s cubic-bezier(.2,.8,.2,1);
+  }
+  .promo-slide.on{opacity:1;transform:translateY(0);}
+  .promo-emoji{font-size:clamp(34px,4vw,80px);line-height:1;filter:drop-shadow(0 4px 8px rgba(0,0,0,.3));}
+  .promo-text{flex:1;}
+  .promo-text .t{font-family:'Anton';font-size:clamp(20px,2.4vw,50px);text-transform:uppercase;line-height:.95;letter-spacing:.5px;}
+  .promo-text .s{font-family:'Saira Condensed';font-weight:600;font-size:clamp(13px,1.1vw,24px);opacity:.92;text-transform:uppercase;}
+  .promo-price{
+    font-family:'Oxanium';font-weight:800;font-size:clamp(28px,3.4vw,72px);
+    background:rgba(0,0,0,.22);padding:.18em .5em;border-radius:14px;white-space:nowrap;
+  }
+  .promo-flag{position:absolute;top:0;right:0;background:rgba(0,0,0,.25);font-family:'Oxanium';font-weight:800;font-size:clamp(9px,.8vw,15px);letter-spacing:.2em;padding:.4em .9em;border-radius:0 0 0 12px;text-transform:uppercase;}
+
+  /* ===================== TICKER ===================== */
+  .ticker{
+    overflow:hidden;border-top:2px solid var(--neon-soft);
+    padding-top:clamp(7px,1vh,14px);white-space:nowrap;
+  }
+  .ticker-inner{display:inline-block;will-change:transform;animation:scroll 26s linear infinite;}
+  .ticker span{
+    font-family:'Oxanium';font-weight:600;
+    font-size:clamp(13px,1.1vw,22px);letter-spacing:.05em;
+    color:var(--gris);margin-right:2.5em;text-transform:uppercase;
+  }
+  .ticker span b{color:var(--neon);}
+  .ticker .sep{color:var(--magenta);margin-right:2.5em;}
+  @keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+  /* entrada */
+  .panel,.promo,.top{animation:rise .7s cubic-bezier(.2,.8,.2,1) both;}
+  .top{animation-delay:.05s;}
+  .body .panel:nth-child(1){animation-delay:.15s;}
+  .right .panel:nth-child(1){animation-delay:.25s;}
+  .right .panel:nth-child(2){animation-delay:.35s;}
+  .promo{animation-delay:.45s;}
+  @keyframes rise{from{opacity:0;transform:translateY(26px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+<div class="screen">
+
+  <!-- HEADER -->
+  <header class="top">
+    <div class="bar-brand">
+      <div class="bar-mark" id="barMark">B</div>
+      <div class="bar-name" id="barName">EL RINCÓN
+        <small id="barTagline">Bar &amp; Parrilla · Villa Carlos Paz</small>
+      </div>
+    </div>
+    <div class="cup-tag">
+      <div class="m">Mundial</div>
+      <div class="y">2026</div>
+      <div style="font-family:'Oxanium',monospace;font-weight:800;font-size:clamp(9px,.75vw,14px);letter-spacing:.3em;color:var(--neon);text-transform:uppercase;margin-top:.3em;opacity:.75;">La Cábala Screen</div>
+    </div>
+  </header>
+
+  <!-- CUERPO -->
+  <div class="body">
+
+    <!-- MARCADOR -->
+    <section class="panel scoreboard">
+      <div class="panel-label"><span class="live-dot"></span>En vivo</div>
+      <div class="gol" id="golOverlay">¡GOOOOL!</div>
+      <div class="match-meta" id="matchMeta">Fase de grupos · Grupo A</div>
+      <div class="score-row">
+        <div class="team">
+          <div class="flag" id="flagA">🇦🇷</div>
+          <div class="team-name" id="nameA">Argentina</div>
+        </div>
+        <div class="scores">
+          <div class="num" id="scoreA">2</div>
+          <div class="dash">–</div>
+          <div class="num" id="scoreB">1</div>
+        </div>
+        <div class="team">
+          <div class="flag" id="flagB">🇲🇽</div>
+          <div class="team-name" id="nameB">México</div>
+        </div>
+      </div>
+      <div class="clock"><span class="ball">⚽</span><span id="clock">62'</span></div>
+    </section>
+
+    <!-- DERECHA -->
+    <div class="right">
+      <!-- TRIVIA -->
+      <section class="panel trivia">
+        <div class="panel-label">Trivia del bar</div>
+        <div class="trivia-q" id="triviaQ">¿En qué año salió campeón del mundo Argentina por última vez?</div>
+        <div class="opts" id="opts"></div>
+        <div class="trivia-bar"><i id="triviaBar"></i></div>
+      </section>
+
+      <!-- PRODE / QR -->
+      <section class="panel prode">
+        <div class="qr-wrap" id="qr"></div>
+        <div class="prode-txt">
+          <h3>Jugá el <b>Prode</b> desde tu celu</h3>
+          <p id="prodeSub">Escaneá y pronosticá los partidos de hoy</p>
+          <span class="prode-prize" id="prodePrize">🏆 El ganador se lleva una picada</span>
+          <div style="margin-top:.6em;font-family:'Oxanium',monospace;font-weight:600;font-size:clamp(9px,.7vw,13px);letter-spacing:.25em;color:var(--gris);text-transform:uppercase;">powered by La Cábala Screen</div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- PROMO -->
+  <div class="promo">
+    <div class="promo-flag">Promo del día</div>
+    <div class="promo-track" id="promoTrack"></div>
+  </div>
+
+  <!-- TICKER -->
+  <div class="ticker">
+    <div class="ticker-inner" id="ticker"></div>
+  </div>
+
+</div>
+
+<script>
+/* ================================================================
+   ⚙️  CONFIG DEL BAR — editá esto por cada cliente
+   ================================================================ */
+const CONFIG = {
+  bar: {
+    inicial: "R",
+    nombre: "EL RINCÓN",
+    tagline: "Bar & Parrilla · Villa Carlos Paz"
+  },
+  // URL del Prode del bar (el QR apunta acá)
+  prodeURL: "https://prode.singularidad.net.ar/elrincon",
+  prodeSub: "Escaneá y pronosticá los partidos de hoy",
+  prodePremio: "🏆 El ganador se lleva una picada",
+
+  // Partido en pantalla — datos demo (se pisa con la API en vivo cuando tenés la key)
+  partido: {
+    meta: "Amistoso Internacional · Estadio Nacional Jamor",
+    equipoA: { nombre:"Portugal", flag:"🇵🇹", goles:0 },
+    equipoB: { nombre:"Chile",    flag:"🇨🇱", goles:0 },
+    minutoInicial: 1
+  },
+
+  // Promos del bar que van rotando
+  promos: [
+    { emoji:"🍺", titulo:"Birra + Pizza", sub:"Pinta artesanal + muzza individual", precio:"$6.900" },
+    { emoji:"🥩", titulo:"Picada para 2", sub:"Tabla de fiambres + papas + 2 cervezas", precio:"$12.500" },
+    { emoji:"🍔", titulo:"Combo Gol", sub:"Doble cuarto + papas + gaseosa", precio:"$7.400" },
+    { emoji:"🍹", titulo:"2x1 en Tragos", sub:"Toda la previa al partido (18 a 20 hs)", precio:"2x1" },
+    { emoji:"☕", titulo:"Café + Medialunas", sub:"Para arrancar el día de partido", precio:"$3.200" }
+  ],
+
+  // Preguntas de trivia que van rotando
+  trivia: [
+    { q:"¿En qué año salió campeón del mundo Argentina por última vez?", opts:["2014","2018","2022","2026"], correcta:2 },
+    { q:"¿Quién atajó el penal decisivo en la final de Qatar 2022?", opts:["Armani","Dibu Martínez","Rulli","Andrada"], correcta:1 },
+    { q:"¿Cuántos Mundiales ganó la Selección Argentina?", opts:["1","2","3","4"], correcta:2 },
+    { q:"¿En qué país se juega el Mundial 2026?", opts:["Brasil","USA, México y Canadá","Qatar","España"], correcta:1 },
+    { q:"¿Quién es el goleador histórico de la Selección?", opts:["Batistuta","Maradona","Messi","Agüero"], correcta:2 }
+  ],
+
+  // Otros resultados para el ticker inferior
+  ticker: [
+    "🇧🇪 Bélgica 5 – 0 🇹🇳 Túnez · Final",
+    "🇵🇹 Portugal – 🇨🇱 Chile · 14:45",
+    "🇺🇸 Estados Unidos – 🇩🇪 Alemania · 15:30",
+    "🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra – 🇳🇿 Nueva Zelanda · 17:00",
+    "🇧🇷 Brasil – 🇪🇬 Egipto · 19:00",
+    "🇻🇪 Venezuela – 🇹🇷 Turquía · 19:00"
+  ]
+};
+
+/* ================================================================
+   Render inicial
+   ================================================================ */
+const $ = id => document.getElementById(id);
+
+$("barMark").textContent = CONFIG.bar.inicial;
+$("barName").childNodes[0].nodeValue = CONFIG.bar.nombre + " ";
+$("barTagline").textContent = CONFIG.bar.tagline;
+
+$("matchMeta").textContent = CONFIG.partido.meta;
+$("nameA").textContent = CONFIG.partido.equipoA.nombre;
+$("flagA").textContent = CONFIG.partido.equipoA.flag;
+$("nameB").textContent = CONFIG.partido.equipoB.nombre;
+$("flagB").textContent = CONFIG.partido.equipoB.flag;
+$("prodeSub").textContent = CONFIG.prodeSub;
+$("prodePrize").textContent = CONFIG.prodePremio;
+
+let golesA = CONFIG.partido.equipoA.goles;
+let golesB = CONFIG.partido.equipoB.goles;
+let minuto = CONFIG.partido.minutoInicial;
+$("scoreA").textContent = golesA;
+$("scoreB").textContent = golesB;
+$("clock").textContent = minuto + "'";
+
+/* QR */
+new QRCode($("qr"), {
+  text: CONFIG.prodeURL,
+  width: 150, height: 150,
+  colorDark: "#06120c", colorLight: "#f3f7ee",
+  correctLevel: QRCode.CorrectLevel.M
+});
+
+/* Ticker (duplicado para loop infinito) */
+(function(){
+  const marca = `<span style="color:var(--neon);letter-spacing:.25em;">⚽ LA CÁBALA SCREEN</span><span class="sep">◆</span>`;
+  const items = CONFIG.ticker.map(t=>`<span>${t}</span><span class="sep">◆</span>`).join("") + marca;
+  $("ticker").innerHTML = items + items;
+})();
+
+/* ================================================================
+   Festejo de gol — compartido por modo demo y modo en vivo
+   ================================================================ */
+function festejarGol(equipo){
+  const overlay=$("golOverlay");
+  overlay.classList.remove("show"); void overlay.offsetWidth;
+  overlay.classList.add("show");
+  if(equipo==="A"){ golesA++; $("scoreA").textContent=golesA; bump("scoreA"); }
+  else            { golesB++; $("scoreB").textContent=golesB; bump("scoreB"); }
+}
+function bump(id){const e=$(id);e.classList.remove("bump");void e.offsetWidth;e.classList.add("bump");}
+
+/* ================================================================
+   MODO DEMO — arranca si la API no responde
+   ================================================================ */
+let modoDemo=false;
+function activarModoDemo(){
+  if(modoDemo) return; modoDemo=true;
+  setInterval(()=>{ minuto++; if(minuto>90)minuto=1; $("clock").textContent=minuto+"'"; },2500);
+  setInterval(()=>{ if(Math.random()<.5)festejarGol(Math.random()<.6?"A":"B"); },14000);
+}
+
+/* ================================================================
+   FETCH EN VIVO — /api/scores (proxy Vercel → API-Football)
+   Actualiza cada 60 seg; fallback automático a modo demo
+   ================================================================ */
+const BANDERAS={
+  "Argentina":"🇦🇷","Brazil":"🇧🇷","France":"🇫🇷","Germany":"🇩🇪",
+  "Spain":"🇪🇸","England":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","Portugal":"🇵🇹","Netherlands":"🇳🇱",
+  "Italy":"🇮🇹","Mexico":"🇲🇽","United States":"🇺🇸","USA":"🇺🇸",
+  "Canada":"🇨🇦","Uruguay":"🇺🇾","Colombia":"🇨🇴","Chile":"🇨🇱",
+  "Ecuador":"🇪🇨","Peru":"🇵🇪","Japan":"🇯🇵","South Korea":"🇰🇷",
+  "Australia":"🇦🇺","Morocco":"🇲🇦","Senegal":"🇸🇳","Nigeria":"🇳🇬",
+  "Ghana":"🇬🇭","Saudi Arabia":"🇸🇦","Iran":"🇮🇷","Belgium":"🇧🇪",
+  "Croatia":"🇭🇷","Denmark":"🇩🇰","Poland":"🇵🇱","Switzerland":"🇨🇭",
+  "Serbia":"🇷🇸","Turkey":"🇹🇷","Ukraine":"🇺🇦","Austria":"🇦🇹",
+  "Venezuela":"🇻🇪","Paraguay":"🇵🇾","Bolivia":"🇧🇴","Honduras":"🇭🇳",
+  "Costa Rica":"🇨🇷","Panama":"🇵🇦","Jamaica":"🇯🇲","Cameroon":"🇨🇲",
+  "Egypt":"🇪🇬","Algeria":"🇩🇿","Tunisia":"🇹🇳","Ivory Coast":"🇨🇮",
+  "Mali":"🇲🇱","New Zealand":"🇳🇿","Indonesia":"🇮🇩","China":"🇨🇳",
+  "Iraq":"🇮🇶","Uzbekistan":"🇺🇿","Sweden":"🇸🇪","Norway":"🇳🇴",
+  "Slovakia":"🇸🇰","Romania":"🇷🇴","Georgia":"🇬🇪","Albania":"🇦🇱",
+  "Slovenia":"🇸🇮","Qatar":"🇶🇦",
+};
+function bandera(n){return BANDERAS[n]||"🏳️";}
+
+let prevGA=-1, prevGB=-1;
+
+function actualizarTicker(otros){
+  if(!otros||!otros.length)return;
+  const marca=`<span style="color:var(--neon);letter-spacing:.25em;">⚽ LA CÁBALA SCREEN</span><span class="sep">◆</span>`;
+  const items=otros.map(p=>{
+    const h=p.goals.home??0,a=p.goals.away??0;
+    return `<span>${bandera(p.teams.home.name)} ${p.teams.home.name} ${h} – ${a} ${p.teams.away.name} ${bandera(p.teams.away.name)}</span><span class="sep">◆</span>`;
+  }).join("")+marca;
+  $("ticker").innerHTML=items+items;
+}
+
+async function actualizarMarcador(){
+  try{
+    const resp=await fetch("/api/scores");
+    if(!resp.ok)throw new Error("HTTP "+resp.status);
+    const data=await resp.json();
+
+    if(!data.ok||!data.fixtures||!data.fixtures.length){
+      activarModoDemo(); return;
+    }
+
+    // Preferir partido de Argentina; si no, el primero
+    const p=data.fixtures.find(f=>
+      f.teams.home.name==="Argentina"||f.teams.away.name==="Argentina"
+    )||data.fixtures[0];
+
+    const home=p.teams.home.name, away=p.teams.away.name;
+    const golH=p.goals.home??0, golA=p.goals.away??0;
+    const min=p.fixture.status.elapsed, estado=p.fixture.status.short;
+
+    $("nameA").textContent=home; $("flagA").textContent=bandera(home);
+    $("nameB").textContent=away; $("flagB").textContent=bandera(away);
+    $("matchMeta").textContent=p.league.round||"Mundial 2026";
+
+    // Detectar y festejar goles nuevos
+    if(prevGA!==-1){
+      if(golH>prevGA)festejarGol("A");
+      if(golA>prevGB)festejarGol("B");
+    }
+    golesA=golH; golesB=golA;
+    $("scoreA").textContent=golH; $("scoreB").textContent=golA;
+    prevGA=golH; prevGB=golA;
+
+    // Reloj según estado del partido
+    const clockMap={"HT":"ET","FT":"FIN","NS":"--'","PEN":"PEN","ET":"ET2"};
+    $("clock").textContent=clockMap[estado]||((min||"--")+"'");
+
+    // Actualizar ticker con otros partidos del día
+    actualizarTicker(data.fixtures.filter(f=>f!==p));
+
+  }catch(err){
+    console.warn("API no disponible, activando demo:", err.message);
+    activarModoDemo();
+  }
+}
+
+// Arrancar: primer fetch inmediato, luego cada 60 segundos
+actualizarMarcador();
+setInterval(actualizarMarcador, 60000);
+
+/* ================================================================
+   Trivia rotante con countdown + revelación
+   ================================================================ */
+let tIdx = 0;
+function pintarTrivia(){
+  const t = CONFIG.trivia[tIdx];
+  $("triviaQ").textContent = t.q;
+  const letras = ["A","B","C","D"];
+  $("opts").innerHTML = t.opts.map((o,i)=>
+    `<div class="opt" data-i="${i}"><span class="k">${letras[i]}</span><span>${o}</span></div>`
+  ).join("");
+  // reset barra
+  const bar = $("triviaBar");
+  bar.style.transition="none"; bar.style.width="100%"; void bar.offsetWidth;
+  bar.style.transition="width 8s linear"; bar.style.width="0%";
+  // revelar respuesta a los 8s
+  setTimeout(()=>{
+    const opt = document.querySelector(`.opt[data-i="${t.correcta}"]`);
+    if(opt) opt.classList.add("correct");
+  }, 8000);
+  // siguiente pregunta a los 11s
+  setTimeout(()=>{ tIdx=(tIdx+1)%CONFIG.trivia.length; pintarTrivia(); }, 11000);
+}
+pintarTrivia();
+
+/* ================================================================
+   Promos rotantes
+   ================================================================ */
+(function(){
+  const track = $("promoTrack");
+  track.innerHTML = CONFIG.promos.map((p,i)=>`
+    <div class="promo-slide ${i===0?'on':''}" data-i="${i}">
+      <div class="promo-emoji">${p.emoji}</div>
+      <div class="promo-text">
+        <div class="t">${p.titulo}</div>
+        <div class="s">${p.sub}</div>
+      </div>
+      <div class="promo-price">${p.precio}</div>
+    </div>`).join("");
+  let pIdx=0;
+  const slides=[...track.querySelectorAll(".promo-slide")];
+  setInterval(()=>{
+    slides[pIdx].classList.remove("on");
+    pIdx=(pIdx+1)%slides.length;
+    slides[pIdx].classList.add("on");
+  }, 5000);
+})();
+</script>
+</body>
+</html>
