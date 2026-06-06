@@ -598,7 +598,46 @@ function iniciarRotacion() {
   }, 10000);
 }
 
+function mostrarPartidoManual(m) {
+  if (rotacionInterval) { clearInterval(rotacionInterval); rotacionInterval = null; }
+
+  $("flagA").innerHTML = bandera(m.equipoA); $("nameA").textContent = m.equipoA;
+  $("flagB").innerHTML = bandera(m.equipoB); $("nameB").textContent = m.equipoB;
+  $("matchMeta").textContent = m.info || "Partido manual";
+
+  const golH = m.golesA ?? 0, golA = m.golesB ?? 0;
+  const id = `manual-${m.equipoA}-${m.equipoB}`;
+  const prev = prevGoals[id] || { h: -1, a: -1 };
+  if (prev.h !== -1) {
+    if (golH > prev.h) animarGol("A");
+    if (golA > prev.a) animarGol("B");
+  }
+  prevGoals[id] = { h: golH, a: golA };
+  golesA = golH; golesB = golA;
+  $("scoreA").textContent = golH;
+  $("scoreB").textContent = golA;
+
+  // Reloj: avanza automáticamente desde el minuto guardado según el tiempo transcurrido
+  if (m.estado === "in" && m.updatedAt) {
+    const elapsed = Math.floor((Date.now() - new Date(m.updatedAt).getTime()) / 60000);
+    $("clock").textContent = Math.min(90, (m.minuto || 0) + elapsed) + "'";
+  } else {
+    const cm = { ht: "ET", ft: "FIN", pre: "--'" };
+    $("clock").textContent = cm[m.estado] || ((m.minuto || "--") + "'");
+  }
+}
+
 async function actualizarMarcador() {
+  // Primero: chequear si hay partido manual activo
+  try {
+    const mr = await fetch("/api/match");
+    if (mr.ok) {
+      const { match } = await mr.json();
+      if (match) { mostrarPartidoManual(match); return; }
+    }
+  } catch { /* sin manual, seguir con ESPN */ }
+
+  // Fallback: ESPN
   try {
     const resp = await fetch("/api/scores");
     if (!resp.ok) throw new Error("HTTP " + resp.status);
@@ -630,9 +669,9 @@ async function actualizarMarcador() {
   }
 }
 
-// Arrancar: primer fetch inmediato, luego cada 60 segundos
+// Arrancar: primer fetch inmediato, luego cada 30 segundos
 actualizarMarcador();
-setInterval(actualizarMarcador, 60000);
+setInterval(actualizarMarcador, 30000);
 
 /* ================================================================
    Trivia rotante con countdown + revelación

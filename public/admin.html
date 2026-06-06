@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Admin · La Cábala Screen</title>
+<link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;600;800&family=Saira+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0a0a0a; --panel:#161616; --border:#2a2a2a;
+    --neon:#ccff00; --magenta:#ff2e7e; --naranja:#ff8a1e;
+    --gris:#888; --texto:#f0f0f0;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{background:var(--bg);color:var(--texto);font-family:'Saira Condensed',sans-serif;min-height:100vh;}
+  .container{max-width:480px;margin:0 auto;padding:16px 16px 60px;}
+
+  .header{text-align:center;padding:20px 0 16px;border-bottom:1px solid var(--border);margin-bottom:20px;}
+  .header h1{font-family:'Oxanium';font-weight:800;font-size:20px;color:var(--neon);letter-spacing:.2em;text-transform:uppercase;}
+  .header p{color:var(--gris);font-size:11px;letter-spacing:.15em;text-transform:uppercase;margin-top:4px;}
+
+  /* Password */
+  .pwd-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px;}
+  .pwd-screen label{color:var(--gris);font-size:12px;letter-spacing:.15em;text-transform:uppercase;}
+  .pwd-screen input{background:var(--panel);border:1px solid var(--border);color:var(--texto);
+    padding:14px 20px;border-radius:12px;font-size:20px;text-align:center;width:240px;
+    font-family:'Oxanium';letter-spacing:.15em;}
+  .pwd-screen input:focus{outline:none;border-color:var(--neon);}
+
+  /* Buttons */
+  .btn-neon{background:var(--neon);color:#000;border:none;padding:14px 32px;border-radius:12px;
+    font-family:'Oxanium';font-weight:800;font-size:15px;letter-spacing:.1em;
+    text-transform:uppercase;cursor:pointer;width:240px;transition:opacity .15s;}
+  .btn-neon:active{opacity:.8;}
+
+  /* Status badge */
+  .status-bar{display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
+  .badge{display:inline-flex;align-items:center;gap:7px;border:1px solid;border-radius:20px;
+    padding:7px 16px;font-family:'Oxanium';font-size:12px;letter-spacing:.15em;text-transform:uppercase;}
+  .badge.manual{border-color:var(--neon);color:var(--neon);}
+  .badge.auto{border-color:var(--gris);color:var(--gris);}
+  .dot{width:8px;height:8px;border-radius:50%;background:currentColor;flex-shrink:0;}
+  .dot.pulse{animation:dp 1.2s infinite;}
+  @keyframes dp{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+  /* Scoreboard */
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:20px 16px;margin-bottom:14px;}
+  .card-title{font-family:'Oxanium';font-weight:800;font-size:11px;letter-spacing:.25em;
+    text-transform:uppercase;color:var(--gris);margin-bottom:16px;}
+  .team-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;}
+  .team-row+.team-row{margin-top:8px;padding-top:12px;border-top:1px solid var(--border);}
+  .team-info{display:flex;align-items:center;gap:12px;flex:1;min-width:0;}
+  .team-flag{flex-shrink:0;line-height:1;}
+  .team-flag img{height:30px;width:auto;border-radius:3px;display:block;}
+  .team-nombre{font-family:'Oxanium';font-weight:800;font-size:17px;text-transform:uppercase;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .score-ctrl{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .score-num{font-family:'Oxanium';font-weight:800;font-size:46px;color:var(--neon);
+    min-width:52px;text-align:center;line-height:1;}
+  .btn-g{width:46px;height:46px;border-radius:50%;border:2px solid;cursor:pointer;
+    font-family:'Oxanium';font-weight:800;font-size:24px;display:flex;align-items:center;
+    justify-content:center;line-height:1;transition:transform .1s,opacity .1s;user-select:none;}
+  .btn-g:active{transform:scale(.88);opacity:.8;}
+  .btn-plus{background:var(--neon);color:#000;border-color:var(--neon);}
+  .btn-minus{background:transparent;color:var(--gris);border-color:var(--border);}
+
+  /* Config fields */
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--gris);margin-bottom:6px;}
+  .field input,.field select{width:100%;background:var(--bg);border:1px solid var(--border);
+    color:var(--texto);padding:12px 14px;border-radius:10px;font-family:'Oxanium';font-size:15px;}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--neon);}
+  .field select option{background:var(--bg);}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+  .btn-row{display:flex;gap:10px;margin-top:16px;}
+  .btn-activar{flex:2;background:var(--neon);color:#000;border:none;padding:15px;border-radius:12px;
+    font-family:'Oxanium';font-weight:800;font-size:15px;letter-spacing:.08em;
+    text-transform:uppercase;cursor:pointer;transition:opacity .15s;}
+  .btn-activar:active{opacity:.8;}
+  .btn-desactivar{flex:1;background:transparent;color:var(--magenta);border:1.5px solid var(--magenta);
+    padding:15px;border-radius:12px;font-family:'Oxanium';font-weight:800;font-size:13px;
+    letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:opacity .15s;}
+  .btn-desactivar:active{opacity:.7;}
+
+  /* Toast */
+  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+    background:var(--neon);color:#000;padding:12px 28px;border-radius:12px;
+    font-family:'Oxanium';font-weight:800;font-size:14px;letter-spacing:.1em;
+    text-transform:uppercase;opacity:0;transition:opacity .25s;pointer-events:none;
+    z-index:99;white-space:nowrap;}
+  .toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>🎛 Admin</h1>
+    <p>La Cábala Screen · Marcador manual</p>
+  </div>
+
+  <!-- Pantalla de contraseña -->
+  <div id="pwdScreen" class="pwd-screen">
+    <label>Contraseña</label>
+    <input type="password" id="pwdInput" placeholder="••••••••" autocomplete="current-password">
+    <button class="btn-neon" onclick="login()">Entrar</button>
+  </div>
+
+  <!-- Panel admin -->
+  <div id="adminPanel" style="display:none">
+
+    <div class="status-bar">
+      <span id="modoBadge" class="badge auto">
+        <span class="dot" id="modoDot"></span>
+        <span id="modoTexto">Cargando…</span>
+      </span>
+    </div>
+
+    <!-- Marcador con botones de gol -->
+    <div class="card">
+      <div class="card-title">Marcador</div>
+      <div class="team-row">
+        <div class="team-info">
+          <div class="team-flag" id="aFlag">🏳️</div>
+          <div class="team-nombre" id="aNombre">Equipo A</div>
+        </div>
+        <div class="score-ctrl">
+          <button class="btn-g btn-minus" onclick="gol('A',-1)">−</button>
+          <div class="score-num" id="aGol">0</div>
+          <button class="btn-g btn-plus" onclick="gol('A',+1)">+</button>
+        </div>
+      </div>
+      <div class="team-row">
+        <div class="team-info">
+          <div class="team-flag" id="bFlag">🏳️</div>
+          <div class="team-nombre" id="bNombre">Equipo B</div>
+        </div>
+        <div class="score-ctrl">
+          <button class="btn-g btn-minus" onclick="gol('B',-1)">−</button>
+          <div class="score-num" id="bGol">0</div>
+          <button class="btn-g btn-plus" onclick="gol('B',+1)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Configuración del partido -->
+    <div class="card">
+      <div class="card-title">Configurar partido</div>
+      <div class="two-col">
+        <div class="field">
+          <label>Equipo A</label>
+          <input type="text" id="iNombreA" placeholder="ej: Cabo Verde">
+        </div>
+        <div class="field">
+          <label>Equipo B</label>
+          <input type="text" id="iNombreB" placeholder="ej: Bermuda">
+        </div>
+      </div>
+      <div class="field">
+        <label>Descripción del partido</label>
+        <input type="text" id="iInfo" placeholder="ej: Amistoso Internacional">
+      </div>
+      <div class="two-col">
+        <div class="field">
+          <label>Estado</label>
+          <select id="iEstado">
+            <option value="in">⚽ En vivo</option>
+            <option value="ht">⏱ Medio tiempo</option>
+            <option value="ft">✅ Terminado</option>
+            <option value="pre">🕐 Por empezar</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Minuto inicial</label>
+          <input type="number" id="iMinuto" placeholder="0" min="0" max="120" value="0">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-activar" onclick="activar()">✓ Activar manual</button>
+        <button class="btn-desactivar" onclick="desactivar()">× Auto ESPN</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const ISO_CODES = {
+  "Argentina":"ar","Brazil":"br","Uruguay":"uy","Colombia":"co","Ecuador":"ec",
+  "Venezuela":"ve","Paraguay":"py","Bolivia":"bo","Peru":"pe","Chile":"cl",
+  "United States":"us","USA":"us","Mexico":"mx","Canada":"ca",
+  "Honduras":"hn","Panama":"pa","Costa Rica":"cr","Jamaica":"jm",
+  "El Salvador":"sv","Guatemala":"gt","Haiti":"ht","Cuba":"cu","Curaçao":"cw",
+  "France":"fr","Germany":"de","Spain":"es","Portugal":"pt","Netherlands":"nl",
+  "England":"gb-eng","Belgium":"be","Italy":"it","Croatia":"hr","Switzerland":"ch",
+  "Denmark":"dk","Austria":"at","Serbia":"rs","Turkey":"tr","Georgia":"ge",
+  "Scotland":"gb-sct","Wales":"gb-wls","Poland":"pl","Ukraine":"ua","Norway":"no",
+  "Sweden":"se","Romania":"ro","Slovakia":"sk","Slovenia":"si","Albania":"al",
+  "Finland":"fi","Greece":"gr","Czech Republic":"cz","Czechia":"cz",
+  "Hungary":"hu","Ireland":"ie","Iceland":"is","Bosnia and Herzegovina":"ba",
+  "North Macedonia":"mk","Montenegro":"me","Kosovo":"xk",
+  "Japan":"jp","South Korea":"kr","Australia":"au","Iran":"ir","Saudi Arabia":"sa",
+  "Iraq":"iq","Jordan":"jo","Uzbekistan":"uz","Indonesia":"id","Qatar":"qa",
+  "China":"cn","China PR":"cn","Palestine":"ps","UAE":"ae","Syria":"sy",
+  "Morocco":"ma","Nigeria":"ng","Egypt":"eg","Senegal":"sn","South Africa":"za",
+  "DR Congo":"cd","Cameroon":"cm","Ivory Coast":"ci","Ghana":"gh",
+  "Algeria":"dz","Tunisia":"tn","Mali":"ml","Zambia":"zm","Kenya":"ke",
+  "Comoros":"km","Cape Verde":"cv","Guinea":"gn","Angola":"ao","Namibia":"na",
+  "New Zealand":"nz","Fiji":"fj","Papua New Guinea":"pg",
+  "Bermuda":"bm","Chinese Taipei":"tw","Maldives":"mv","Zimbabwe":"zw",
+};
+
+function flag(nombre) {
+  const cc = ISO_CODES[nombre];
+  if (!cc) return "🏳️";
+  return `<img src="/images/flags/${cc}.png" alt="${nombre}" style="height:30px;width:auto;border-radius:3px;display:block;">`;
+}
+
+let pwd = sessionStorage.getItem("adminPwd") || "";
+let state = null;
+
+function login() {
+  const v = document.getElementById("pwdInput").value.trim();
+  if (!v) return;
+  pwd = v;
+  sessionStorage.setItem("adminPwd", v);
+  cargar();
+}
+
+async function cargar() {
+  try {
+    const r = await fetch("/api/match");
+    const d = await r.json();
+    state = d.match || null;
+    mostrar();
+    document.getElementById("pwdScreen").style.display = "none";
+    document.getElementById("adminPanel").style.display = "block";
+  } catch {
+    toast("Error conectando con el servidor");
+  }
+}
+
+function mostrar() {
+  const activo = !!state;
+  const badge = document.getElementById("modoBadge");
+  const dot = document.getElementById("modoDot");
+  badge.className = "badge " + (activo ? "manual" : "auto");
+  dot.className = "dot" + (activo ? " pulse" : "");
+  document.getElementById("modoTexto").textContent = activo ? "Manual activo" : "Auto (ESPN)";
+
+  const m = state || {};
+  document.getElementById("aNombre").textContent = m.equipoA || "Equipo A";
+  document.getElementById("aFlag").innerHTML = flag(m.equipoA || "");
+  document.getElementById("aGol").textContent = m.golesA ?? 0;
+  document.getElementById("bNombre").textContent = m.equipoB || "Equipo B";
+  document.getElementById("bFlag").innerHTML = flag(m.equipoB || "");
+  document.getElementById("bGol").textContent = m.golesB ?? 0;
+
+  if (activo) {
+    document.getElementById("iNombreA").value = m.equipoA || "";
+    document.getElementById("iNombreB").value = m.equipoB || "";
+    document.getElementById("iInfo").value = m.info || "";
+    document.getElementById("iEstado").value = m.estado || "in";
+    document.getElementById("iMinuto").value = m.minuto || 0;
+  }
+}
+
+async function post(body) {
+  try {
+    const r = await fetch("/api/match", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...body, password: pwd })
+    });
+    if (r.status === 401) {
+      toast("Contraseña incorrecta");
+      sessionStorage.removeItem("adminPwd");
+      pwd = "";
+      document.getElementById("pwdScreen").style.display = "flex";
+      document.getElementById("adminPanel").style.display = "none";
+      return null;
+    }
+    return await r.json();
+  } catch {
+    toast("Error de red");
+    return null;
+  }
+}
+
+async function gol(equipo, delta) {
+  if (!state) { toast("Activá el modo manual primero"); return; }
+  if (equipo === "A") state.golesA = Math.max(0, (state.golesA ?? 0) + delta);
+  else               state.golesB = Math.max(0, (state.golesB ?? 0) + delta);
+  mostrar();
+  const d = await post(state);
+  if (d?.ok) toast(delta > 0 ? "⚽ GOL" : "Gol corregido");
+}
+
+async function activar() {
+  const nombreA = document.getElementById("iNombreA").value.trim();
+  const nombreB = document.getElementById("iNombreB").value.trim();
+  if (!nombreA || !nombreB) { toast("Ingresá los nombres de los equipos"); return; }
+  state = {
+    equipoA: nombreA,
+    equipoB: nombreB,
+    golesA: parseInt(document.getElementById("aGol").textContent) || 0,
+    golesB: parseInt(document.getElementById("bGol").textContent) || 0,
+    info: document.getElementById("iInfo").value.trim() || "Amistoso Internacional",
+    estado: document.getElementById("iEstado").value,
+    minuto: parseInt(document.getElementById("iMinuto").value) || 0,
+  };
+  const d = await post(state);
+  if (d?.ok) { mostrar(); toast("✓ Partido activado en pantalla"); }
+}
+
+async function desactivar() {
+  const d = await post({ action: "clear" });
+  if (d?.ok) { state = null; mostrar(); toast("Volviendo a ESPN automático"); }
+}
+
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove("show"), 2400);
+}
+
+// Auto-login si ya tenía contraseña guardada
+if (pwd) cargar();
+
+// Heartbeat cada 25s para mantener la función Vercel caliente
+setInterval(() => { if (pwd) fetch("/api/match").catch(() => {}); }, 25000);
+
+document.getElementById("pwdInput").addEventListener("keydown", e => {
+  if (e.key === "Enter") login();
+});
+</script>
+</body>
+</html>
