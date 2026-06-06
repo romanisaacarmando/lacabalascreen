@@ -191,23 +191,23 @@
   .right{display:grid;grid-template-rows:1.25fr 1fr;gap:clamp(12px,1.4vw,24px);min-height:0;}
 
   .trivia{
-    padding:clamp(16px,2.2vh,30px) clamp(16px,1.6vw,28px);
+    padding:1em 1.1em;
     display:flex;flex-direction:column;
     font-size:clamp(13px,1.4vw,26px); /* unidad base — JS la reduce si hace falta */
     overflow:hidden;min-height:0;
   }
   .trivia-q{
-    margin-top:clamp(14px,2.5vh,28px);
+    margin-top:0.8em;
     font-family:'Saira Condensed';font-weight:700;
-    font-size:1.25em;line-height:1.1;
+    font-size:1.2em;line-height:1.1;
     text-transform:uppercase;letter-spacing:.5px;
   }
-  .opts{display:grid;gap:clamp(5px,.8vh,10px);margin-top:clamp(8px,1.2vh,14px);}
+  .opts{display:grid;gap:0.32em;margin-top:0.45em;}
   .opt{
     display:flex;align-items:center;gap:.7em;
     background:rgba(255,255,255,.05);
     border:1px solid rgba(255,255,255,.1);
-    border-radius:12px;padding:.45em .9em;
+    border-radius:12px;padding:.4em .9em;
     font-family:'Saira Condensed';font-weight:600;
     font-size:1em;text-transform:uppercase;
     transition:all .3s ease;
@@ -219,7 +219,7 @@
   }
   .opt.correct{background:linear-gradient(90deg,var(--neon),#9bd400);border-color:var(--neon);color:var(--noche);}
   .opt.correct .k{background:rgba(0,0,0,.2);color:var(--noche);}
-  .trivia-bar{height:6px;border-radius:6px;background:rgba(255,255,255,.1);margin-top:clamp(12px,1.6vh,18px);overflow:hidden;}
+  .trivia-bar{height:6px;border-radius:6px;background:rgba(255,255,255,.1);margin-top:0.6em;overflow:hidden;}
   .trivia-bar i{display:block;height:100%;background:var(--magenta);width:100%;}
 
   /* ----- QR / PRODE ----- */
@@ -721,15 +721,16 @@ setInterval(actualizarMarcador, 30000);
 function ajustarTrivia() {
   const panel = document.querySelector('.trivia');
   if (!panel) return;
-  panel.style.fontSize = ''; // reset a valor CSS base
-  // Reduce la fuente de a 1px hasta que todo entre en el contenedor
-  let attempts = 0;
-  while (panel.scrollHeight > panel.clientHeight + 2 && attempts < 20) {
-    const fs = parseFloat(getComputedStyle(panel).fontSize);
-    if (fs <= 10) break;
-    panel.style.fontSize = (fs - 1) + 'px';
-    attempts++;
-  }
+  panel.style.fontSize = '';
+  requestAnimationFrame(() => {
+    let attempts = 0;
+    while (panel.scrollHeight > panel.clientHeight + 1 && attempts < 50) {
+      const fs = parseFloat(getComputedStyle(panel).fontSize);
+      if (fs <= 8) break;
+      panel.style.fontSize = (fs - 1) + 'px';
+      attempts++;
+    }
+  });
 }
 
 let tIdx = 0;
@@ -740,7 +741,7 @@ function pintarTrivia(){
   $("opts").innerHTML = t.opts.map((o,i)=>
     `<div class="opt" data-i="${i}"><span class="k">${letras[i]}</span><span>${o}</span></div>`
   ).join("");
-  setTimeout(ajustarTrivia, 50); // ajustar después de que el DOM renderice
+  requestAnimationFrame(() => requestAnimationFrame(ajustarTrivia));
   // reset barra
   const bar = $("triviaBar");
   bar.style.transition="none"; bar.style.width="100%"; void bar.offsetWidth;
