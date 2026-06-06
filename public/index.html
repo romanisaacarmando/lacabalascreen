@@ -190,21 +190,26 @@
   /* ----- COLUMNA DERECHA ----- */
   .right{display:grid;grid-template-rows:1.25fr 1fr;gap:clamp(12px,1.4vw,24px);min-height:0;}
 
-  .trivia{padding:clamp(16px,2.2vh,30px) clamp(16px,1.6vw,28px);display:flex;flex-direction:column;}
+  .trivia{
+    padding:clamp(16px,2.2vh,30px) clamp(16px,1.6vw,28px);
+    display:flex;flex-direction:column;
+    font-size:clamp(13px,1.4vw,26px); /* unidad base — JS la reduce si hace falta */
+    overflow:hidden;min-height:0;
+  }
   .trivia-q{
-    margin-top:clamp(18px,3vh,34px);
+    margin-top:clamp(14px,2.5vh,28px);
     font-family:'Saira Condensed';font-weight:700;
-    font-size:clamp(18px,1.7vw,34px);line-height:1.05;
+    font-size:1.25em;line-height:1.1;
     text-transform:uppercase;letter-spacing:.5px;
   }
-  .opts{display:grid;gap:clamp(7px,1vh,12px);margin-top:auto;}
+  .opts{display:grid;gap:clamp(5px,.8vh,10px);margin-top:clamp(8px,1.2vh,14px);}
   .opt{
     display:flex;align-items:center;gap:.7em;
     background:rgba(255,255,255,.05);
     border:1px solid rgba(255,255,255,.1);
-    border-radius:12px;padding:clamp(7px,1.1vh,13px) clamp(10px,1vw,18px);
+    border-radius:12px;padding:.45em .9em;
     font-family:'Saira Condensed';font-weight:600;
-    font-size:clamp(15px,1.3vw,26px);text-transform:uppercase;
+    font-size:1em;text-transform:uppercase;
     transition:all .3s ease;
   }
   .opt .k{
@@ -668,6 +673,20 @@ setInterval(actualizarMarcador, 30000);
 /* ================================================================
    Trivia rotante con countdown + revelación
    ================================================================ */
+function ajustarTrivia() {
+  const panel = document.querySelector('.trivia');
+  if (!panel) return;
+  panel.style.fontSize = ''; // reset a valor CSS base
+  // Reduce la fuente de a 1px hasta que todo entre en el contenedor
+  let attempts = 0;
+  while (panel.scrollHeight > panel.clientHeight + 2 && attempts < 20) {
+    const fs = parseFloat(getComputedStyle(panel).fontSize);
+    if (fs <= 10) break;
+    panel.style.fontSize = (fs - 1) + 'px';
+    attempts++;
+  }
+}
+
 let tIdx = 0;
 function pintarTrivia(){
   const t = CONFIG.trivia[tIdx];
@@ -676,6 +695,7 @@ function pintarTrivia(){
   $("opts").innerHTML = t.opts.map((o,i)=>
     `<div class="opt" data-i="${i}"><span class="k">${letras[i]}</span><span>${o}</span></div>`
   ).join("");
+  setTimeout(ajustarTrivia, 50); // ajustar después de que el DOM renderice
   // reset barra
   const bar = $("triviaBar");
   bar.style.transition="none"; bar.style.width="100%"; void bar.offsetWidth;
@@ -689,6 +709,7 @@ function pintarTrivia(){
   setTimeout(()=>{ tIdx=(tIdx+1)%CONFIG.trivia.length; pintarTrivia(); }, 11000);
 }
 pintarTrivia();
+window.addEventListener('resize', ajustarTrivia);
 
 /* ================================================================
    Promos rotantes
