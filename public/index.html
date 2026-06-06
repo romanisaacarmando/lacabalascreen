@@ -628,16 +628,8 @@ function mostrarPartidoManual(m) {
 }
 
 async function actualizarMarcador() {
-  // Primero: chequear si hay partido manual activo
-  try {
-    const mr = await fetch("/api/match");
-    if (mr.ok) {
-      const { match } = await mr.json();
-      if (match) { mostrarPartidoManual(match); return; }
-    }
-  } catch { /* sin manual, seguir con ESPN */ }
-
-  // Fallback: ESPN
+  // Modo manual desactivado — usar ESPN
+  // Para reactivar: descomentar el bloque de /api/match en esta función
   try {
     const resp = await fetch("/api/scores");
     if (!resp.ok) throw new Error("HTTP " + resp.status);
