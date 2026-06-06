@@ -425,6 +425,51 @@ const CONFIG = {
 };
 
 /* ================================================================
+   Banderas — debe ir antes del render para que bandera() esté disponible
+   ================================================================ */
+const ISO_CODES = {
+  // CONMEBOL
+  "Argentina":"ar","Brazil":"br","Uruguay":"uy","Colombia":"co","Ecuador":"ec",
+  "Venezuela":"ve","Paraguay":"py","Bolivia":"bo","Peru":"pe","Chile":"cl",
+  // CONCACAF
+  "United States":"us","USA":"us","Mexico":"mx","Canada":"ca",
+  "Honduras":"hn","Panama":"pa","Costa Rica":"cr","Jamaica":"jm",
+  "El Salvador":"sv","Guatemala":"gt","Haiti":"ht","Cuba":"cu","Curaçao":"cw",
+  "Trinidad & Tobago":"tt","Trinidad and Tobago":"tt",
+  // UEFA
+  "France":"fr","Germany":"de","Spain":"es","Portugal":"pt","Netherlands":"nl",
+  "England":"gb-eng","Belgium":"be","Italy":"it","Croatia":"hr","Switzerland":"ch",
+  "Denmark":"dk","Austria":"at","Serbia":"rs","Turkey":"tr","Georgia":"ge",
+  "Scotland":"gb-sct","Wales":"gb-wls","Poland":"pl","Ukraine":"ua","Norway":"no",
+  "Sweden":"se","Romania":"ro","Slovakia":"sk","Slovenia":"si","Albania":"al",
+  "Finland":"fi","Greece":"gr","Czech Republic":"cz","Czechia":"cz",
+  "Hungary":"hu","Ireland":"ie","Republic of Ireland":"ie","Iceland":"is",
+  "Northern Ireland":"gb-nir","Bosnia and Herzegovina":"ba","Bosnia":"ba",
+  "North Macedonia":"mk","Montenegro":"me","Bulgaria":"bg","Israel":"il",
+  "Luxembourg":"lu","Kosovo":"xk",
+  // AFC
+  "Japan":"jp","South Korea":"kr","Australia":"au","Iran":"ir","Saudi Arabia":"sa",
+  "Iraq":"iq","Jordan":"jo","Uzbekistan":"uz","Indonesia":"id","Qatar":"qa",
+  "China":"cn","China PR":"cn","Palestine":"ps","Bahrain":"bh","Oman":"om",
+  "Kuwait":"kw","UAE":"ae","United Arab Emirates":"ae","Syria":"sy",
+  "Vietnam":"vn","Thailand":"th","India":"in",
+  // CAF
+  "Morocco":"ma","Nigeria":"ng","Egypt":"eg","Senegal":"sn","South Africa":"za",
+  "DR Congo":"cd","Cameroon":"cm","Ivory Coast":"ci","Côte d'Ivoire":"ci",
+  "Ghana":"gh","Algeria":"dz","Tunisia":"tn","Mali":"ml","Zambia":"zm",
+  "Tanzania":"tz","Kenya":"ke","Comoros":"km","Cape Verde":"cv","Guinea":"gn",
+  "Gabon":"ga","Burkina Faso":"bf","Angola":"ao","Namibia":"na",
+  "Mozambique":"mz","Uganda":"ug","Equatorial Guinea":"gq","Benin":"bj",
+  // OFC
+  "New Zealand":"nz","Fiji":"fj","Papua New Guinea":"pg",
+};
+function bandera(n) {
+  const cc = ISO_CODES[n];
+  if (!cc) return "🏳️";
+  return `<img src="/images/flags/${cc}.png" alt="${n}">`;
+}
+
+/* ================================================================
    Render inicial
    ================================================================ */
 const $ = id => document.getElementById(id);
@@ -494,48 +539,6 @@ function activarModoDemo() {
    Actualiza cada 60 seg; fallback automático a modo demo
    Rota entre partidos simultáneos cada 10 segundos
    ================================================================ */
-const ISO_CODES = {
-  // CONMEBOL
-  "Argentina":"ar","Brazil":"br","Uruguay":"uy","Colombia":"co","Ecuador":"ec",
-  "Venezuela":"ve","Paraguay":"py","Bolivia":"bo","Peru":"pe","Chile":"cl",
-  // CONCACAF
-  "United States":"us","USA":"us","Mexico":"mx","Canada":"ca",
-  "Honduras":"hn","Panama":"pa","Costa Rica":"cr","Jamaica":"jm",
-  "El Salvador":"sv","Guatemala":"gt","Haiti":"ht","Cuba":"cu","Curaçao":"cw",
-  "Trinidad & Tobago":"tt","Trinidad and Tobago":"tt",
-  // UEFA
-  "France":"fr","Germany":"de","Spain":"es","Portugal":"pt","Netherlands":"nl",
-  "England":"gb-eng","Belgium":"be","Italy":"it","Croatia":"hr","Switzerland":"ch",
-  "Denmark":"dk","Austria":"at","Serbia":"rs","Turkey":"tr","Georgia":"ge",
-  "Scotland":"gb-sct","Wales":"gb-wls","Poland":"pl","Ukraine":"ua","Norway":"no",
-  "Sweden":"se","Romania":"ro","Slovakia":"sk","Slovenia":"si","Albania":"al",
-  "Finland":"fi","Greece":"gr","Czech Republic":"cz","Czechia":"cz",
-  "Hungary":"hu","Ireland":"ie","Republic of Ireland":"ie","Iceland":"is",
-  "Northern Ireland":"gb-nir","Bosnia and Herzegovina":"ba","Bosnia":"ba",
-  "North Macedonia":"mk","Montenegro":"me","Bulgaria":"bg","Israel":"il",
-  "Luxembourg":"lu","Kosovo":"xk",
-  // AFC
-  "Japan":"jp","South Korea":"kr","Australia":"au","Iran":"ir","Saudi Arabia":"sa",
-  "Iraq":"iq","Jordan":"jo","Uzbekistan":"uz","Indonesia":"id","Qatar":"qa",
-  "China":"cn","China PR":"cn","Palestine":"ps","Bahrain":"bh","Oman":"om",
-  "Kuwait":"kw","UAE":"ae","United Arab Emirates":"ae","Syria":"sy",
-  "Vietnam":"vn","Thailand":"th","India":"in",
-  // CAF
-  "Morocco":"ma","Nigeria":"ng","Egypt":"eg","Senegal":"sn","South Africa":"za",
-  "DR Congo":"cd","Cameroon":"cm","Ivory Coast":"ci","Côte d'Ivoire":"ci",
-  "Ghana":"gh","Algeria":"dz","Tunisia":"tn","Mali":"ml","Zambia":"zm",
-  "Tanzania":"tz","Kenya":"ke","Comoros":"km","Cape Verde":"cv","Guinea":"gn",
-  "Gabon":"ga","Burkina Faso":"bf","Angola":"ao","Namibia":"na",
-  "Mozambique":"mz","Uganda":"ug","Equatorial Guinea":"gq","Benin":"bj",
-  // OFC
-  "New Zealand":"nz","Fiji":"fj","Papua New Guinea":"pg",
-};
-function bandera(n) {
-  const cc = ISO_CODES[n];
-  if (!cc) return "🏳️";
-  return `<img src="/images/flags/${cc}.png" alt="${n}">`;
-}
-
 let prevGoals = {};
 let fixtures = [], fixtureIdx = 0, rotacionInterval = null, firstFetch = true;
 
