@@ -722,15 +722,17 @@ function ajustarTrivia() {
   const panel = document.querySelector('.trivia');
   if (!panel) return;
   panel.style.fontSize = '';
-  requestAnimationFrame(() => {
-    let attempts = 0;
-    while (panel.scrollHeight > panel.clientHeight + 1 && attempts < 50) {
-      const fs = parseFloat(getComputedStyle(panel).fontSize);
-      if (fs <= 8) break;
-      panel.style.fontSize = (fs - 1) + 'px';
-      attempts++;
-    }
-  });
+  // Reading scrollHeight forces a synchronous layout reflow
+  if (panel.scrollHeight <= panel.clientHeight) return;
+  // Binary search: find the largest font size where content fits
+  let lo = 8, hi = parseFloat(getComputedStyle(panel).fontSize);
+  for (let i = 0; i < 14; i++) {
+    const mid = (lo + hi) / 2;
+    panel.style.fontSize = mid + 'px';
+    if (panel.scrollHeight > panel.clientHeight) hi = mid;
+    else lo = mid;
+  }
+  panel.style.fontSize = Math.floor(lo) + 'px';
 }
 
 let tIdx = 0;
@@ -741,7 +743,7 @@ function pintarTrivia(){
   $("opts").innerHTML = t.opts.map((o,i)=>
     `<div class="opt" data-i="${i}"><span class="k">${letras[i]}</span><span>${o}</span></div>`
   ).join("");
-  requestAnimationFrame(() => requestAnimationFrame(ajustarTrivia));
+  setTimeout(ajustarTrivia, 120);
   // reset barra
   const bar = $("triviaBar");
   bar.style.transition="none"; bar.style.width="100%"; void bar.offsetWidth;
@@ -755,7 +757,7 @@ function pintarTrivia(){
   setTimeout(()=>{ tIdx=(tIdx+1)%CONFIG.trivia.length; pintarTrivia(); }, 11000);
 }
 pintarTrivia();
-window.addEventListener('resize', ajustarTrivia);
+window.addEventListener('resize', () => { clearTimeout(window._trt); window._trt = setTimeout(ajustarTrivia, 150); });
 
 /* ================================================================
    Promos rotantes
