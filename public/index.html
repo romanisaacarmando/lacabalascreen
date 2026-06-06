@@ -411,11 +411,65 @@ const CONFIG = {
 
   // Preguntas de trivia que van rotando
   trivia: [
-    { q:"¿En qué año salió campeón del mundo Argentina por última vez?", opts:["2014","2018","2022","2026"], correcta:2 },
+    // Argentina campeona
+    { q:"¿En qué año ganó Argentina su primer Mundial?", opts:["1974","1978","1982","1986"], correcta:1 },
+    { q:"¿En qué año Argentina ganó su segundo Mundial con Maradona?", opts:["1982","1984","1986","1990"], correcta:2 },
+    { q:"¿En qué año salió Argentina campeón del mundo por tercera vez?", opts:["2018","2020","2022","2024"], correcta:2 },
+    { q:"¿A qué selección le ganó Argentina la final de Qatar 2022?", opts:["Brasil","Croacia","España","Francia"], correcta:3 },
+    { q:"¿Quién fue el DT de Argentina campeón en Qatar 2022?", opts:["Sampaoli","Bauza","Bielsa","Scaloni"], correcta:3 },
     { q:"¿Quién atajó el penal decisivo en la final de Qatar 2022?", opts:["Armani","Dibu Martínez","Rulli","Andrada"], correcta:1 },
+    { q:"¿Cuántos goles marcó Messi en el Mundial 2022?", opts:["5","6","7","8"], correcta:2 },
+    { q:"¿A qué selección eliminó Argentina en semifinales de Qatar 2022?", opts:["Brasil","Países Bajos","Croacia","España"], correcta:2 },
+    { q:"¿En qué estadio se jugó la final de Qatar 2022?", opts:["Estadio Khalifa","Estadio 974","Estadio Lusail","Estadio Al Bayt"], correcta:2 },
+    { q:"¿Quién marcó el gol de la victoria en la final del Mundial 1986?", opts:["Maradona","Valdano","Burruchaga","Ruggeri"], correcta:2 },
+    // Maradona
+    { q:"¿Qué jugador marcó el 'Gol del Siglo' en México 1986?", opts:["Valdano","Burruchaga","Maradona","Caniggia"], correcta:2 },
+    { q:"¿A qué selección le marcó Maradona 'La Mano de Dios'?", opts:["Alemania","Brasil","Inglaterra","Italia"], correcta:2 },
+    { q:"¿En qué Mundial ganó Maradona el premio al mejor jugador?", opts:["España 1982","México 1986","Italia 1990","USA 1994"], correcta:1 },
+    { q:"¿Cuántos Mundiales disputó Diego Maradona con Argentina?", opts:["2","3","4","5"], correcta:2 },
+    { q:"¿En qué ciudad nació Diego Armando Maradona?", opts:["Buenos Aires (Lanús)","Rosario","Córdoba","Mendoza"], correcta:0 },
+    // Messi
+    { q:"¿Cuántos Balones de Oro ganó Lionel Messi?", opts:["6","7","8","9"], correcta:2 },
+    { q:"¿En qué club debutó profesionalmente Lionel Messi?", opts:["Newell's","River Plate","Barcelona","PSG"], correcta:2 },
+    { q:"¿Con qué número juega Messi en la Selección Argentina?", opts:["7","9","10","11"], correcta:2 },
+    { q:"¿Quién es el goleador histórico de la Selección Argentina?", opts:["Batistuta","Maradona","Messi","Agüero"], correcta:2 },
+    { q:"¿En qué ciudad argentina nació Lionel Messi?", opts:["Buenos Aires","Rosario","Córdoba","Santa Fe"], correcta:1 },
+    // Historia mundiales
+    { q:"¿Qué país organizó el primer Mundial de fútbol?", opts:["Argentina","Brasil","Uruguay","Chile"], correcta:2 },
+    { q:"¿En qué año fue el primer Mundial de fútbol?", opts:["1924","1928","1930","1934"], correcta:2 },
+    { q:"¿Qué país ganó más Mundiales en la historia?", opts:["Alemania","Italia","Argentina","Brasil"], correcta:3 },
+    { q:"¿Cuántos Mundiales ganó Brasil?", opts:["3","4","5","6"], correcta:2 },
+    { q:"¿Quién es el máximo goleador de la historia de los Mundiales?", opts:["Ronaldo (Brasil)","Miroslav Klose","Pelé","Gerd Müller"], correcta:1 },
+    { q:"¿Cuántos goles marcó Klose en Mundiales (récord histórico)?", opts:["13","14","15","16"], correcta:3 },
     { q:"¿Cuántos Mundiales ganó la Selección Argentina?", opts:["1","2","3","4"], correcta:2 },
-    { q:"¿En qué país se juega el Mundial 2026?", opts:["Brasil","USA, México y Canadá","Qatar","España"], correcta:1 },
-    { q:"¿Quién es el goleador histórico de la Selección?", opts:["Batistuta","Maradona","Messi","Agüero"], correcta:2 }
+    { q:"¿Qué selección ganó el Mundial de Rusia 2018?", opts:["Alemania","Croacia","Brasil","Francia"], correcta:3 },
+    { q:"¿Qué selección ganó el Mundial de Brasil 2014?", opts:["Argentina","Brasil","Alemania","España"], correcta:2 },
+    { q:"¿Qué selección ganó el Mundial de Sudáfrica 2010?", opts:["Alemania","España","Brasil","Italia"], correcta:1 },
+    { q:"¿Qué selección ganó el Mundial de Alemania 2006?", opts:["Alemania","Brasil","Francia","Italia"], correcta:3 },
+    { q:"¿Qué selección ganó el Mundial de Japón/Corea 2002?", opts:["Brasil","Alemania","Argentina","Francia"], correcta:0 },
+    // Mundial 2026
+    { q:"¿En qué países se juega el Mundial 2026?", opts:["Brasil, Argentina y Chile","USA, Canadá y México","España, Portugal y Marruecos","Australia y NZ"], correcta:1 },
+    { q:"¿Cuántos equipos participarán en el Mundial 2026?", opts:["32","40","48","64"], correcta:2 },
+    { q:"¿Cuántos partidos tendrá el Mundial 2026?", opts:["64","80","104","128"], correcta:2 },
+    // Fútbol argentino
+    { q:"¿Cómo se llama el estadio de River Plate?", opts:["La Bombonera","El Monumental","El Cilindro","El Coloso"], correcta:1 },
+    { q:"¿En qué barrio está La Bombonera, la cancha de Boca?", opts:["Palermo","Barracas","La Boca","San Telmo"], correcta:2 },
+    { q:"¿Qué equipo argentino ganó la final de la Copa Libertadores 2018?", opts:["Boca Juniors","River Plate","Racing","Independiente"], correcta:1 },
+    // Copa América
+    { q:"¿En qué año Argentina ganó la Copa América tras 28 años sin ganarla?", opts:["2019","2020","2021","2022"], correcta:2 },
+    { q:"¿En qué estadio se jugó la final de la Copa América 2021?", opts:["La Bombonera","El Monumental","Maracanã","Estadio Nacional"], correcta:2 },
+    // Reglas
+    { q:"¿Cuántos jugadores tiene un equipo de fútbol en la cancha?", opts:["9","10","11","12"], correcta:2 },
+    { q:"¿Cuánto dura un partido de fútbol reglamentario?", opts:["80 minutos","85 minutos","90 minutos","100 minutos"], correcta:2 },
+    { q:"¿Desde qué distancia se patea un penal?", opts:["10 metros","11 metros","12 metros","15 metros"], correcta:1 },
+    { q:"¿Cuánto mide el arco de ancho en el fútbol oficial?", opts:["6,32 m","7,32 m","8,32 m","9,32 m"], correcta:1 },
+    { q:"¿Cuántos metros mide el radio del área penal?", opts:["16,5 m","18 m","20 m","22 m"], correcta:0 },
+    // Champions / internacional
+    { q:"¿Qué club ganó más veces la Champions League?", opts:["Barcelona","Bayern Munich","Liverpool","Real Madrid"], correcta:3 },
+    { q:"¿Cuántas Champions League ganó Messi con el Barcelona?", opts:["2","3","4","5"], correcta:2 },
+    { q:"¿En qué país juega el PSG, club donde jugó Messi?", opts:["Inglaterra","Italia","Francia","España"], correcta:2 },
+    { q:"¿Qué jugador ganó más veces el Balón de Oro en la historia?", opts:["Cristiano Ronaldo","Lionel Messi","Ronaldo Nazário","Zinedine Zidane"], correcta:1 },
+    { q:"¿Qué selección ganó la Eurocopa 2024 en Alemania?", opts:["Francia","Inglaterra","España","Alemania"], correcta:2 }
   ],
 
   // Otros resultados para el ticker inferior
