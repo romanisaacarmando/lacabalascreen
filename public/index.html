@@ -132,7 +132,7 @@
   .scoreboard{
     display:flex;flex-direction:column;justify-content:center;align-items:center;
     padding:clamp(20px,3vh,48px) clamp(16px,2vw,40px);
-    text-align:center;
+    text-align:center;transition:opacity .35s ease;
   }
   .match-meta{
     font-family:'Oxanium';font-weight:600;letter-spacing:.3em;
@@ -462,32 +462,37 @@ new QRCode($("qr"), {
 })();
 
 /* ================================================================
-   Festejo de gol — compartido por modo demo y modo en vivo
+   Animación de gol
    ================================================================ */
-function festejarGol(equipo){
-  const overlay=$("golOverlay");
+function animarGol(equipo) {
+  const overlay = $("golOverlay");
   overlay.classList.remove("show"); void overlay.offsetWidth;
   overlay.classList.add("show");
-  if(equipo==="A"){ golesA++; $("scoreA").textContent=golesA; bump("scoreA"); }
-  else            { golesB++; $("scoreB").textContent=golesB; bump("scoreB"); }
+  bump(equipo === "A" ? "scoreA" : "scoreB");
 }
-function bump(id){const e=$(id);e.classList.remove("bump");void e.offsetWidth;e.classList.add("bump");}
+function festejarGol(equipo) {
+  animarGol(equipo);
+  if (equipo === "A") { golesA++; $("scoreA").textContent = golesA; }
+  else                { golesB++; $("scoreB").textContent = golesB; }
+}
+function bump(id) { const e=$(id); e.classList.remove("bump"); void e.offsetWidth; e.classList.add("bump"); }
 
 /* ================================================================
    MODO DEMO — arranca si la API no responde
    ================================================================ */
-let modoDemo=false;
-function activarModoDemo(){
-  if(modoDemo) return; modoDemo=true;
-  setInterval(()=>{ minuto++; if(minuto>90)minuto=1; $("clock").textContent=minuto+"'"; },2500);
-  setInterval(()=>{ if(Math.random()<.5)festejarGol(Math.random()<.6?"A":"B"); },14000);
+let modoDemo = false;
+function activarModoDemo() {
+  if (modoDemo) return; modoDemo = true;
+  setInterval(() => { minuto++; if (minuto > 90) minuto = 1; $("clock").textContent = minuto + "'"; }, 2500);
+  setInterval(() => { if (Math.random() < .5) festejarGol(Math.random() < .6 ? "A" : "B"); }, 14000);
 }
 
 /* ================================================================
    FETCH EN VIVO — /api/scores (proxy Vercel → API-Football)
    Actualiza cada 60 seg; fallback automático a modo demo
+   Rota entre partidos simultáneos cada 10 segundos
    ================================================================ */
-const BANDERAS={
+const BANDERAS = {
   "Argentina":"🇦🇷","Brazil":"🇧🇷","France":"🇫🇷","Germany":"🇩🇪",
   "Spain":"🇪🇸","England":"🏴󠁧󠁢󠁥󠁮󠁧󠁿","Portugal":"🇵🇹","Netherlands":"🇳🇱",
   "Italy":"🇮🇹","Mexico":"🇲🇽","United States":"🇺🇸","USA":"🇺🇸",
@@ -505,60 +510,94 @@ const BANDERAS={
   "Slovakia":"🇸🇰","Romania":"🇷🇴","Georgia":"🇬🇪","Albania":"🇦🇱",
   "Slovenia":"🇸🇮","Qatar":"🇶🇦",
 };
-function bandera(n){return BANDERAS[n]||"🏳️";}
+function bandera(n) { return BANDERAS[n] || "🏳️"; }
 
-let prevGA=-1, prevGB=-1;
+let prevGoals = {};
+let fixtures = [], fixtureIdx = 0, rotacionInterval = null, firstFetch = true;
 
-function actualizarTicker(otros){
-  if(!otros||!otros.length)return;
-  const marca=`<span style="color:var(--neon);letter-spacing:.25em;">⚽ LA CÁBALA SCREEN</span><span class="sep">◆</span>`;
-  const items=otros.map(p=>{
-    const h=p.goals.home??0,a=p.goals.away??0;
+function actualizarTicker(otros) {
+  if (!otros || !otros.length) return;
+  const marca = `<span style="color:var(--neon);letter-spacing:.25em;">⚽ LA CÁBALA SCREEN</span><span class="sep">◆</span>`;
+  const items = otros.map(p => {
+    const h = p.goals.home ?? 0, a = p.goals.away ?? 0;
     return `<span>${bandera(p.teams.home.name)} ${p.teams.home.name} ${h} – ${a} ${p.teams.away.name} ${bandera(p.teams.away.name)}</span><span class="sep">◆</span>`;
-  }).join("")+marca;
-  $("ticker").innerHTML=items+items;
+  }).join("") + marca;
+  $("ticker").innerHTML = items + items;
 }
 
-async function actualizarMarcador(){
-  try{
-    const resp=await fetch("/api/scores");
-    if(!resp.ok)throw new Error("HTTP "+resp.status);
-    const data=await resp.json();
+function mostrarPartido(p) {
+  const home = p.teams.home.name, away = p.teams.away.name;
+  const golH = p.goals.home ?? 0, golA = p.goals.away ?? 0;
+  const min = p.fixture.status.elapsed, estado = p.fixture.status.short;
+  const id = p.fixture.id;
 
-    if(!data.ok||!data.fixtures||!data.fixtures.length){
+  // Fade out → actualizar contenido → fade in
+  const sb = document.querySelector(".scoreboard");
+  sb.style.opacity = "0";
+  setTimeout(() => { sb.style.opacity = ""; }, 350);
+
+  $("nameA").textContent = home; $("flagA").textContent = bandera(home);
+  $("nameB").textContent = away; $("flagB").textContent = bandera(away);
+
+  const total = fixtures.length;
+  const roundLabel = p.league.round || "Mundial 2026";
+  $("matchMeta").textContent = total > 1
+    ? `${roundLabel} · Partido ${fixtureIdx + 1}/${total}`
+    : roundLabel;
+
+  // Detectar y animar goles nuevos por partido
+  const prev = prevGoals[id] || { h: -1, a: -1 };
+  if (prev.h !== -1) {
+    if (golH > prev.h) animarGol("A");
+    if (golA > prev.a) animarGol("B");
+  }
+  prevGoals[id] = { h: golH, a: golA };
+
+  golesA = golH; golesB = golA;
+  $("scoreA").textContent = golH;
+  $("scoreB").textContent = golA;
+
+  const clockMap = { "HT":"ET", "FT":"FIN", "NS":"--'", "PEN":"PEN", "ET":"ET2" };
+  $("clock").textContent = clockMap[estado] || ((min || "--") + "'");
+}
+
+function iniciarRotacion() {
+  if (rotacionInterval) clearInterval(rotacionInterval);
+  if (fixtures.length <= 1) return;
+  rotacionInterval = setInterval(() => {
+    fixtureIdx = (fixtureIdx + 1) % fixtures.length;
+    mostrarPartido(fixtures[fixtureIdx]);
+    actualizarTicker(fixtures.filter((_, i) => i !== fixtureIdx));
+  }, 10000);
+}
+
+async function actualizarMarcador() {
+  try {
+    const resp = await fetch("/api/scores");
+    if (!resp.ok) throw new Error("HTTP " + resp.status);
+    const data = await resp.json();
+
+    if (!data.ok || !data.fixtures || !data.fixtures.length) {
       activarModoDemo(); return;
     }
 
-    // Preferir partido de Argentina; si no, el primero
-    const p=data.fixtures.find(f=>
-      f.teams.home.name==="Argentina"||f.teams.away.name==="Argentina"
-    )||data.fixtures[0];
+    fixtures = data.fixtures;
 
-    const home=p.teams.home.name, away=p.teams.away.name;
-    const golH=p.goals.home??0, golA=p.goals.away??0;
-    const min=p.fixture.status.elapsed, estado=p.fixture.status.short;
-
-    $("nameA").textContent=home; $("flagA").textContent=bandera(home);
-    $("nameB").textContent=away; $("flagB").textContent=bandera(away);
-    $("matchMeta").textContent=p.league.round||"Mundial 2026";
-
-    // Detectar y festejar goles nuevos
-    if(prevGA!==-1){
-      if(golH>prevGA)festejarGol("A");
-      if(golA>prevGB)festejarGol("B");
+    if (firstFetch) {
+      firstFetch = false;
+      const argIdx = fixtures.findIndex(f =>
+        f.teams.home.name === "Argentina" || f.teams.away.name === "Argentina"
+      );
+      fixtureIdx = argIdx !== -1 ? argIdx : 0;
+    } else {
+      fixtureIdx = fixtureIdx % fixtures.length;
     }
-    golesA=golH; golesB=golA;
-    $("scoreA").textContent=golH; $("scoreB").textContent=golA;
-    prevGA=golH; prevGB=golA;
 
-    // Reloj según estado del partido
-    const clockMap={"HT":"ET","FT":"FIN","NS":"--'","PEN":"PEN","ET":"ET2"};
-    $("clock").textContent=clockMap[estado]||((min||"--")+"'");
+    mostrarPartido(fixtures[fixtureIdx]);
+    actualizarTicker(fixtures.filter((_, i) => i !== fixtureIdx));
+    iniciarRotacion();
 
-    // Actualizar ticker con otros partidos del día
-    actualizarTicker(data.fixtures.filter(f=>f!==p));
-
-  }catch(err){
+  } catch(err) {
     console.warn("API no disponible, activando demo:", err.message);
     activarModoDemo();
   }
