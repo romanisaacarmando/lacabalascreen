@@ -60,7 +60,7 @@ export default async function handler(req, res) {
     const result = {
       ok: true,
       fixtures,
-      source: live.length ? "live" : "today",
+      source: fixtures.some(f => f.status === "in") ? "live" : "today",
       updatedAt: new Date().toISOString()
     };
 
