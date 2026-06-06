@@ -557,7 +557,7 @@ function mostrarPartido(p) {
   const home = p.teams.home.name, away = p.teams.away.name;
   const golH = p.goals.home ?? 0, golA = p.goals.away ?? 0;
   const min = p.fixture.status.elapsed, estado = p.fixture.status.short;
-  const id = p.fixture.id;
+  const id = p.id ?? p.fixture?.id ?? `${home}-${away}`;
 
   // Fade out → actualizar contenido → fade in
   const sb = document.querySelector(".scoreboard");

@@ -13,12 +13,13 @@
 const ESPN = "https://site.api.espn.com/apis/site/v2/sports/soccer";
 
 // Slugs de ligas de selecciones en ESPN
-// Los primeros son los más probables para amistosos y torneos
 const SLUGS = [
+  "fifa.world",          // Mundial 2026 ← principal
   "fifa.friendly",       // Amistosos FIFA
   "int.friendlies",      // Variante del slug
   "conmebol.worldq",     // Eliminatorias Conmebol
   "fifa.worldq",         // Eliminatorias mundiales (genérico)
+  "concacaf.nations.league", // Nations League CONCACAF
 ];
 
 let cache = { data: null, ts: 0 };
@@ -49,10 +50,12 @@ export default async function handler(req, res) {
         return true;
       });
 
-    // Filtrar solo partidos en vivo o de hoy
-    const live    = allFixtures.filter(f => f.status === "in");
-    const today   = allFixtures.filter(f => f.status !== "in");
-    const fixtures = live.length ? live : today;
+    // Ordenar: en vivo primero, luego terminados, luego programados
+    // Así siempre hay partidos para rotar aunque solo uno esté en vivo
+    const order = { in: 0, post: 1, pre: 2 };
+    const fixtures = allFixtures.sort((a, b) =>
+      (order[a.status] ?? 3) - (order[b.status] ?? 3)
+    );
 
     const result = {
       ok: true,
