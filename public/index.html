@@ -116,7 +116,9 @@
     font-family:'Oxanium';font-weight:800;
     font-size:clamp(10px,.8vw,15px);letter-spacing:.22em;
     padding:.4em .9em;border-radius:0 0 14px 0;text-transform:uppercase;z-index:3;
+    transition:background .3s;
   }
+  .panel-label.finalizado{background:var(--gris);color:#fff;}
   .live-dot{
     display:inline-block;width:.55em;height:.55em;border-radius:50%;
     background:var(--magenta);margin-right:.45em;vertical-align:middle;
@@ -654,10 +656,32 @@ function mostrarPartido(p) {
   $("scoreA").textContent = golH;
   $("scoreB").textContent = golA;
 
-  const clockMap = { "HT":"ET", "FT":"FIN", "NS":"--'", "PEN":"PEN", "ET":"ET2" };
-  $("clock").textContent = clockMap[estado] || ((min || "--") + "'");
+  // Reloj
+  if (p.status === "pre" && p.date) {
+    // Partido por empezar: mostrar hora de inicio en horario Argentina (UTC-3)
+    const hora = new Date(p.date).toLocaleTimeString("es-AR", {
+      timeZone: "America/Argentina/Buenos_Aires",
+      hour: "2-digit", minute: "2-digit", hour12: false
+    });
+    $("clock").textContent = hora;
+  } else {
+    const clockMap = { "HT":"ET", "FT":"FIN", "NS":"--'", "PEN":"PEN", "ET":"ET2" };
+    $("clock").textContent = clockMap[estado] || ((min || "--") + "'");
+  }
 
-  $("liveLabel").style.display = p.status === "in" ? "" : "none";
+  // Label superior izquierdo
+  const lbl = $("liveLabel");
+  if (p.status === "in") {
+    lbl.style.display = "";
+    lbl.classList.remove("finalizado");
+    lbl.innerHTML = '<span class="live-dot"></span>En vivo';
+  } else if (p.status === "post") {
+    lbl.style.display = "";
+    lbl.classList.add("finalizado");
+    lbl.textContent = "Finalizado";
+  } else {
+    lbl.style.display = "none";
+  }
 }
 
 function iniciarRotacion() {
