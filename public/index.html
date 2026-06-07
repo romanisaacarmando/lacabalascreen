@@ -64,7 +64,16 @@
     display:flex;align-items:center;justify-content:space-between;
     border-bottom:2px solid var(--neon-soft);
     padding-bottom:clamp(8px,1vh,16px);
+    position:relative;
   }
+  .vamos{
+    position:absolute;left:50%;transform:translateX(-50%);
+    font-family:'Anton';text-transform:uppercase;
+    font-size:clamp(20px,2.4vw,48px);letter-spacing:.08em;
+    line-height:1;pointer-events:none;white-space:nowrap;
+  }
+  .vamos .c{color:#74ACDF;}
+  .vamos .w{color:#ffffff;}
   .bar-brand{display:flex;align-items:center;gap:clamp(10px,1vw,18px);}
   .bar-mark{
     width:clamp(46px,4.2vw,80px);height:clamp(46px,4.2vw,80px);
@@ -307,8 +316,13 @@
     <div class="bar-brand">
       <div class="bar-mark" id="barMark">B</div>
       <div class="bar-name" id="barName">EL RINCÓN
-        <small id="barTagline">Bar &amp; Parrilla · Villa Carlos Paz</small>
+        <small id="barTagline">Bar &amp; Parrilla</small>
       </div>
+    </div>
+    <div class="vamos">
+      <span class="c">V</span><span class="w">A</span><span class="c">M</span><span class="w">O</span><span class="c">S</span>
+      &nbsp;
+      <span class="c">A</span><span class="w">R</span><span class="c">G</span><span class="w">E</span><span class="c">N</span><span class="w">T</span><span class="c">I</span><span class="w">N</span><span class="c">A</span>
     </div>
     <div class="cup-tag">
       <div class="m">Mundial</div>
