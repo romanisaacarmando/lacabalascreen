@@ -320,7 +320,7 @@
 
     <!-- MARCADOR -->
     <section class="panel scoreboard">
-      <div class="panel-label"><span class="live-dot"></span>En vivo</div>
+      <div class="panel-label" id="liveLabel"><span class="live-dot"></span>En vivo</div>
       <div class="gol" id="golOverlay">¡GOOOOL!</div>
       <div class="match-meta" id="matchMeta">Fase de grupos · Grupo A</div>
       <div class="score-row">
@@ -656,6 +656,8 @@ function mostrarPartido(p) {
 
   const clockMap = { "HT":"ET", "FT":"FIN", "NS":"--'", "PEN":"PEN", "ET":"ET2" };
   $("clock").textContent = clockMap[estado] || ((min || "--") + "'");
+
+  $("liveLabel").style.display = p.status === "in" ? "" : "none";
 }
 
 function iniciarRotacion() {
