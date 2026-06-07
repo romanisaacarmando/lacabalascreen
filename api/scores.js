@@ -40,7 +40,9 @@ export default async function handler(req, res) {
 
     // Juntar todos los partidos encontrados, eliminar duplicados por ID
     // y descartar partidos que no sean de hoy (ESPN a veces devuelve fixtures históricos)
-    const todayStr = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+    const now = new Date();
+    const todayStr     = now.toISOString().slice(0, 10);
+    const yesterdayStr = new Date(now - 864e5).toISOString().slice(0, 10);
     const seen = new Set();
     const allFixtures = results
       .filter(r => r.status === "fulfilled")
@@ -48,8 +50,8 @@ export default async function handler(req, res) {
       .filter(f => {
         if (seen.has(f.id)) return false;
         seen.add(f.id);
-        // Descartar si la fecha del partido no es de hoy
-        if (f.date && !f.date.startsWith(todayStr)) return false;
+        // Solo partidos de hoy o ayer (cubre desfase horario Argentina UTC-3)
+        if (f.date && !f.date.startsWith(todayStr) && !f.date.startsWith(yesterdayStr)) return false;
         return true;
       });
 
