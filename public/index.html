@@ -281,7 +281,12 @@
     font-family:'Oxanium';font-weight:800;font-size:clamp(28px,3.4vw,72px);
     background:rgba(0,0,0,.22);padding:.18em .5em;border-radius:14px;white-space:nowrap;
   }
-  .promo-flag{position:absolute;top:0;right:0;background:rgba(0,0,0,.25);font-family:'Oxanium';font-weight:800;font-size:clamp(9px,.8vw,15px);letter-spacing:.2em;padding:.4em .9em;border-radius:0 0 0 12px;text-transform:uppercase;}
+  .promo-flag{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    font-family:'Anton';font-size:clamp(30px,4vw,78px);letter-spacing:.1em;
+    text-transform:uppercase;color:#000;opacity:.18;
+    pointer-events:none;white-space:nowrap;user-select:none;
+  }
 
   /* ===================== TICKER ===================== */
   .ticker{
