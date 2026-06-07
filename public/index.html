@@ -172,23 +172,6 @@
   .ball{display:inline-block;animation:spin 2.4s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
 
-  .scorers{
-    margin-top:clamp(8px,1.2vh,18px);
-    display:none; /* JS lo activa cuando hay datos */
-    grid-template-columns:1fr auto 1fr;
-    width:100%;gap:clamp(6px,.8vw,14px);align-items:start;
-  }
-  .scorers.visible{display:grid;}
-  .sco-list{
-    font-family:'Saira Condensed';font-weight:600;
-    font-size:clamp(11px,.9vw,17px);color:var(--gris);
-    text-transform:uppercase;letter-spacing:.03em;line-height:1.5;
-  }
-  .sco-list.home{text-align:right;}
-  .sco-list.away{text-align:left;}
-  .sco-icon{font-size:clamp(12px,1vw,18px);color:var(--neon);padding-top:.15em;}
-  .sco-og{opacity:.65;font-size:.85em;}
-
   /* gol overlay */
   .gol{
     position:absolute;inset:0;display:grid;place-items:center;z-index:8;
@@ -356,11 +339,6 @@
         </div>
       </div>
       <div class="clock"><span class="ball">⚽</span><span id="clock">62'</span></div>
-      <div class="scorers" id="scorers">
-        <div class="sco-list home" id="scorersHome"></div>
-        <div class="sco-icon">⚽</div>
-        <div class="sco-list away" id="scorersAway"></div>
-      </div>
     </section>
 
     <!-- DERECHA -->
@@ -618,13 +596,29 @@ function activarModoDemo() {
 let prevGoals = {};
 let fixtures = [], fixtureIdx = 0, rotacionInterval = null, firstFetch = true;
 
+function fmtTickerPartido(p) {
+  const h = p.goals.home ?? 0, a = p.goals.away ?? 0;
+  const hName = p.teams.home.name, aName = p.teams.away.name;
+  let txt = `${bandera(hName)} ${hName} ${h} – ${a} ${aName} ${bandera(aName)}`;
+
+  // Agregar goleadores si existen
+  const sc = p.scorers;
+  if (sc && (sc.home?.length || sc.away?.length)) {
+    const fmtList = list => list
+      .map(s => s.name + (s.min ? ' ' + s.min : '') + (s.og ? ' (OG)' : ''))
+      .join(', ');
+    const partes = [];
+    if (sc.home?.length) partes.push(fmtList(sc.home));
+    if (sc.away?.length) partes.push(fmtList(sc.away));
+    txt += `  ·  ${partes.join(' – ')}`;
+  }
+  return `<span>${txt}</span><span class="sep">◆</span>`;
+}
+
 function actualizarTicker(otros) {
   if (!otros || !otros.length) return;
   const marca = `<span style="color:var(--neon);letter-spacing:.25em;">⚽ LA CÁBALA SCREEN</span><span class="sep">◆</span>`;
-  const items = otros.map(p => {
-    const h = p.goals.home ?? 0, a = p.goals.away ?? 0;
-    return `<span>${bandera(p.teams.home.name)} ${p.teams.home.name} ${h} – ${a} ${p.teams.away.name} ${bandera(p.teams.away.name)}</span><span class="sep">◆</span>`;
-  }).join("") + marca;
+  const items = otros.map(fmtTickerPartido).join("") + marca;
   $("ticker").innerHTML = items + items;
 }
 
@@ -662,21 +656,6 @@ function mostrarPartido(p) {
 
   const clockMap = { "HT":"ET", "FT":"FIN", "NS":"--'", "PEN":"PEN", "ET":"ET2" };
   $("clock").textContent = clockMap[estado] || ((min || "--") + "'");
-
-  mostrarGoleadores(p.scorers);
-}
-
-function mostrarGoleadores(scorers) {
-  const sc = scorers || { home: [], away: [] };
-  const fmt = list => list.map(s => {
-    const og = s.og ? ' <span class="sco-og">(OG)</span>' : '';
-    const min = s.min ? ` ${s.min}` : '';
-    return `<span>${(s.name || '?')}${min}${og}</span>`;
-  }).join('<br>');
-  const hasData = sc.home.length || sc.away.length;
-  $("scorers").classList.toggle("visible", !!hasData);
-  $("scorersHome").innerHTML = fmt(sc.home);
-  $("scorersAway").innerHTML = fmt(sc.away);
 }
 
 function iniciarRotacion() {
