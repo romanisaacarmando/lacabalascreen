@@ -88,11 +88,30 @@ async function fetchScoreboard(slug) {
     const away       = comp?.competitors?.find(c => c.homeAway === "away");
     const statusType = comp?.status?.type;
 
+    // Extraer goleadores de scoringPlays
+    const homeId = home?.team?.id;
+    const scorers = { home: [], away: [] };
+    for (const play of (comp?.scoringPlays || [])) {
+      const typeText = (play.type?.text || '').toLowerCase();
+      if (!typeText.includes('goal')) continue;
+      const isOG = typeText.includes('own');
+      const isHome = play.team?.id === homeId;
+      const playerName = play.athletesInvolved?.[0]?.shortName
+        || play.athletesInvolved?.[0]?.displayName || null;
+      // Minuto: clock.value está en segundos
+      const minVal = play.clock?.value != null
+        ? Math.ceil(play.clock.value / 60)
+        : (play.clock?.displayValue?.match(/^(\d+)/)?.[1] ?? null);
+      const entry = { name: playerName, min: minVal ? `${minVal}'` : null, og: isOG };
+      // Un gol en propia puerta suma para el equipo contrario
+      const forHome = isOG ? !isHome : isHome;
+      (forHome ? scorers.home : scorers.away).push(entry);
+    }
+
     return {
       id: e.id,
       status: statusType?.state === "in"  ? "in"   :
               statusType?.state === "post" ? "post" : "pre",
-      // Misma estructura que API-Football para que el front no cambie
       fixture: {
         status: {
           short:   statusType?.shortDetail || "--",
@@ -110,7 +129,8 @@ async function fetchScoreboard(slug) {
       goals: {
         home: home?.score != null ? parseInt(home.score) : null,
         away: away?.score != null ? parseInt(away.score) : null
-      }
+      },
+      scorers
     };
   });
 }
