@@ -39,6 +39,8 @@ export default async function handler(req, res) {
     );
 
     // Juntar todos los partidos encontrados, eliminar duplicados por ID
+    // y descartar partidos que no sean de hoy (ESPN a veces devuelve fixtures históricos)
+    const todayStr = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
     const seen = new Set();
     const allFixtures = results
       .filter(r => r.status === "fulfilled")
@@ -46,6 +48,8 @@ export default async function handler(req, res) {
       .filter(f => {
         if (seen.has(f.id)) return false;
         seen.add(f.id);
+        // Descartar si la fecha del partido no es de hoy
+        if (f.date && !f.date.startsWith(todayStr)) return false;
         return true;
       });
 
@@ -106,6 +110,7 @@ async function fetchScoreboard(slug) {
 
     return {
       id: e.id,
+      date: comp?.date || e.date || null,   // "YYYY-MM-DDTHH:mm:ssZ"
       status: statusType?.state === "in"  ? "in"   :
               statusType?.state === "post" ? "post" : "pre",
       fixture: {
