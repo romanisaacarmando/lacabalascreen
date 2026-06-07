@@ -88,22 +88,18 @@ async function fetchScoreboard(slug) {
     const away       = comp?.competitors?.find(c => c.homeAway === "away");
     const statusType = comp?.status?.type;
 
-    // Extraer goleadores de scoringPlays
+    // Extraer goleadores de comp.details (ESPN usa "details", no "scoringPlays")
     const homeId = home?.team?.id;
     const scorers = { home: [], away: [] };
-    for (const play of (comp?.scoringPlays || [])) {
-      const typeText = (play.type?.text || '').toLowerCase();
-      if (!typeText.includes('goal')) continue;
-      const isOG = typeText.includes('own');
+    for (const play of (comp?.details || [])) {
+      if (!play.scoringPlay) continue;           // solo goles, no tarjetas
+      const isOG  = !!play.ownGoal;
       const isHome = play.team?.id === homeId;
       const playerName = play.athletesInvolved?.[0]?.shortName
         || play.athletesInvolved?.[0]?.displayName || null;
-      // Minuto: clock.value está en segundos
-      const minVal = play.clock?.value != null
-        ? Math.ceil(play.clock.value / 60)
-        : (play.clock?.displayValue?.match(/^(\d+)/)?.[1] ?? null);
-      const entry = { name: playerName, min: minVal ? `${minVal}'` : null, og: isOG };
-      // Un gol en propia puerta suma para el equipo contrario
+      const min = play.clock?.displayValue || null;  // ya viene como "28'"
+      const entry = { name: playerName, min, og: isOG };
+      // Un gol en propia puerta cuenta para el equipo contrario
       const forHome = isOG ? !isHome : isHome;
       (forHome ? scorers.home : scorers.away).push(entry);
     }
