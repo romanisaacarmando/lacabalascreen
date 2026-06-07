@@ -55,15 +55,15 @@ export default async function handler(req, res) {
         return true;
       });
 
-    // Filtrar solo partidos en vivo o de hoy
-    const live    = allFixtures.filter(f => f.status === "in");
-    const today   = allFixtures.filter(f => f.status !== "in");
-    const fixtures = live.length ? live : today;
+    // Ordenar: en vivo primero, luego pre, luego post
+    const ORDER = { in: 0, pre: 1, post: 2 };
+    allFixtures.sort((a, b) => (ORDER[a.status] ?? 9) - (ORDER[b.status] ?? 9));
 
+    const liveCount = allFixtures.filter(f => f.status === "in").length;
     const result = {
       ok: true,
-      fixtures,
-      source: live.length ? "live" : "today",
+      fixtures: allFixtures,
+      source: liveCount ? "live" : "today",
       updatedAt: new Date().toISOString()
     };
 

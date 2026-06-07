@@ -760,10 +760,15 @@ async function actualizarMarcador() {
 
     if (firstFetch) {
       firstFetch = false;
+      // Prioridad: 1) Argentina en vivo, 2) Argentina, 3) cualquier en vivo, 4) primero
+      const argLiveIdx = fixtures.findIndex(f =>
+        f.status === "in" && (f.teams.home.name === "Argentina" || f.teams.away.name === "Argentina")
+      );
       const argIdx = fixtures.findIndex(f =>
         f.teams.home.name === "Argentina" || f.teams.away.name === "Argentina"
       );
-      fixtureIdx = argIdx !== -1 ? argIdx : 0;
+      const liveIdx = fixtures.findIndex(f => f.status === "in");
+      fixtureIdx = argLiveIdx !== -1 ? argLiveIdx : argIdx !== -1 ? argIdx : liveIdx !== -1 ? liveIdx : 0;
     } else {
       fixtureIdx = fixtureIdx % fixtures.length;
     }
