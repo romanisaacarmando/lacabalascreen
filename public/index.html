@@ -660,7 +660,7 @@ function mostrarPartido(p) {
   $("nameB").textContent = away; $("flagB").innerHTML = bandera(away);
 
   const total = fixtures.length;
-  const roundLabel = p.league.round || "Mundial 2026";
+  const roundLabel = "FIFA World Cup 2026";
   $("matchMeta").textContent = total > 1
     ? `${roundLabel} · Partido ${fixtureIdx + 1}/${total}`
     : roundLabel;
@@ -686,8 +686,15 @@ function mostrarPartido(p) {
     });
     $("clock").textContent = hora;
   } else {
-    const clockMap = { "HT":"ET", "FT":"FIN", "NS":"--'", "PEN":"PEN", "ET":"ET2" };
-    $("clock").textContent = clockMap[estado] || ((min || "--") + "'");
+    const clockMap = {
+      "Half Time":"HT", "HT":"HT",
+      "Full Time":"FIN", "Final":"FIN", "FT":"FIN",
+      "Penalty Kicks":"PEN", "PEN":"PEN", "Penalties":"PEN",
+      "Extra Time":"ET", "ET":"ET2"
+    };
+    $("clock").textContent = clockMap[estado] !== undefined
+      ? clockMap[estado]
+      : ((min != null ? min : "--") + "'");
   }
 
   // Label superior izquierdo
