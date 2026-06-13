@@ -6,6 +6,103 @@
 const ESPN = "https://site.api.espn.com/apis/site/v2/sports/soccer";
 const SLUG = "fifa.world";
 
+// Traducción de nombres de países al español
+const ES = {
+  // Américas
+  "United States":       "Estados Unidos",
+  "USA":                 "Estados Unidos",
+  "Brazil":              "Brasil",
+  "Mexico":              "México",
+  "Canada":              "Canadá",
+  "Peru":                "Perú",
+  "Panama":              "Panamá",
+  "Haiti":               "Haití",
+  "Trinidad and Tobago": "Trinidad y Tobago",
+  "Curacao":             "Curazao",
+  "Curaçao":             "Curazao",
+  // Europa
+  "England":             "Inglaterra",
+  "Germany":             "Alemania",
+  "France":              "Francia",
+  "Spain":               "España",
+  "Netherlands":         "Países Bajos",
+  "Holland":             "Países Bajos",
+  "Switzerland":         "Suiza",
+  "Scotland":            "Escocia",
+  "Belgium":             "Bélgica",
+  "Portugal":            "Portugal",
+  "Croatia":             "Croacia",
+  "Serbia":              "Serbia",
+  "Poland":              "Polonia",
+  "Ukraine":             "Ucrania",
+  "Denmark":             "Dinamarca",
+  "Sweden":              "Suecia",
+  "Norway":              "Noruega",
+  "Turkey":              "Turquía",
+  "Türkiye":             "Turquía",
+  "Turkiye":             "Turquía",
+  "Slovakia":            "Eslovaquia",
+  "Slovenia":            "Eslovenia",
+  "Hungary":             "Hungría",
+  "Czech Republic":      "República Checa",
+  "Czechia":             "República Checa",
+  "Albania":             "Albania",
+  "Wales":               "Gales",
+  "Greece":              "Grecia",
+  "Romania":             "Rumania",
+  "Iceland":             "Islandia",
+  "Finland":             "Finlandia",
+  "Ireland":             "Irlanda",
+  "Northern Ireland":    "Irlanda del Norte",
+  "Kosovo":              "Kosovo",
+  "Cyprus":              "Chipre",
+  "Andorra":             "Andorra",
+  "Liechtenstein":       "Liechtenstein",
+  // África
+  "Morocco":             "Marruecos",
+  "Senegal":             "Senegal",
+  "Nigeria":             "Nigeria",
+  "Ghana":               "Ghana",
+  "Cameroon":            "Camerún",
+  "Egypt":               "Egipto",
+  "Tunisia":             "Túnez",
+  "Ivory Coast":         "Costa de Marfil",
+  "Côte d'Ivoire":       "Costa de Marfil",
+  "Cote d'Ivoire":       "Costa de Marfil",
+  "South Africa":        "Sudáfrica",
+  "Algeria":             "Argelia",
+  "Mali":                "Malí",
+  "Congo DR":            "R.D. del Congo",
+  "Congo":               "Congo",
+  "Mozambique":          "Mozambique",
+  "Kenya":               "Kenia",
+  "Tanzania":            "Tanzania",
+  "Lesotho":             "Lesoto",
+  "Angola":              "Angola",
+  // Asia / Oceanía
+  "Japan":               "Japón",
+  "Korea Republic":      "Corea del Sur",
+  "South Korea":         "Corea del Sur",
+  "Saudi Arabia":        "Arabia Saudita",
+  "Iran":                "Irán",
+  "IR Iran":             "Irán",
+  "Australia":           "Australia",
+  "New Zealand":         "Nueva Zelanda",
+  "Qatar":               "Catar",
+  "Uzbekistan":          "Uzbekistán",
+  "Jordan":              "Jordania",
+  "Iraq":                "Irak",
+  "Syria":               "Siria",
+  "Oman":                "Omán",
+  "Afghanistan":         "Afganistán",
+  "Pakistan":            "Pakistán",
+  "China":               "China",
+  "Indonesia":           "Indonesia",
+  "Philippines":         "Filipinas",
+};
+
+const tradES = name => ES[name] || name;
+
 let cache = { data: null, ts: 0 };
 
 export default async function handler(req, res) {
@@ -115,8 +212,8 @@ async function fetchScoreboard(dateESPN) {
         round: e.season?.slug || "FIFA World Cup 2026"
       },
       teams: {
-        home: { name: home?.team?.displayName || "Local",  logo: home?.team?.logo },
-        away: { name: away?.team?.displayName || "Visita", logo: away?.team?.logo }
+        home: { name: tradES(home?.team?.displayName || "Local"),  logo: home?.team?.logo },
+        away: { name: tradES(away?.team?.displayName || "Visita"), logo: away?.team?.logo }
       },
       goals: {
         home: home?.score != null ? parseInt(home.score) : null,
